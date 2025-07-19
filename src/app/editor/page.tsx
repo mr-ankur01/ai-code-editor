@@ -324,12 +324,10 @@ function EditorView() {
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                     {template === 'react' ? 'React.js' : language}
                   </div>
-                   {template !== 'react' && (
-                    <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
+                   <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
                       {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
                       Run
                     </Button>
-                  )}
                 </div>
                 <div className="relative flex-1">
                   <div className="absolute inset-0">
