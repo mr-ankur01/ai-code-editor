@@ -78,13 +78,7 @@ function EditorView() {
     }
   }, [template]);
 
-  const sandboxedReactHtml = useMemo(() => {
-    if (template !== 'react') return '';
-    const reactVersion = '18.3.1';
-    
-    // This style will be injected into the iframe's head.
-    // It makes the iframe's theme match the main app's theme by providing the necessary CSS variables.
-    const themeStyles = `
+  const themeStyles = `
       :root {
         --background: 240 10% 98%;
         --foreground: 222.2 84% 4.9%;
@@ -108,25 +102,25 @@ function EditorView() {
       }
     
       .dark {
-        --background: 20 14% 4%;
-        --foreground: 60 9% 98%;
-        --card: 24 9.8% 10%;
-        --card-foreground: 60 9% 98%;
-        --popover: 24 9.8% 10%;
-        --popover-foreground: 60 9% 98%;
-        --primary: 26 95% 51%;
-        --primary-foreground: 60 9% 98%;
-        --secondary: 12 6.5% 15.1%;
-        --secondary-foreground: 60 9% 98%;
-        --muted: 12 6.5% 15.1%;
-        --muted-foreground: 24 5.4% 63.9%;
-        --accent: 12 6.5% 15.1%;
-        --accent-foreground: 60 9% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 60 9% 98%;
-        --border: 12 6.5% 15.1%;
-        --input: 12 6.5% 15.1%;
-        --ring: 26 95% 51%;
+        --background: 20 14% 6%;
+        --foreground: 20 5% 94%;
+        --card: 20 14% 6%;
+        --card-foreground: 20 5% 94%;
+        --popover: 20 14% 6%;
+        --popover-foreground: 20 5% 94%;
+        --primary: 210 90% 55%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 20 10% 15%;
+        --secondary-foreground: 20 5% 98%;
+        --muted: 20 10% 15%;
+        --muted-foreground: 20 5% 64%;
+        --accent: 22 80% 55%;
+        --accent-foreground: 22 10% 98%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 20 10% 15%;
+        --input: 20 10% 15%;
+        --ring: 210 90% 55%;
       }
 
       body { 
@@ -149,6 +143,10 @@ function EditorView() {
       }
     `;
 
+  const sandboxedReactHtml = useMemo(() => {
+    if (template !== 'react') return '';
+    const reactVersion = '18.3.1';
+    
     return `
       <!DOCTYPE html>
       <html class="${resolvedTheme}">
@@ -172,25 +170,23 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [code, template, resolvedTheme]);
+  }, [code, template, resolvedTheme, themeStyles]);
 
   const sandboxedWebHtml = useMemo(() => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    
-    const head = doc.head || doc.createElement('head');
-    const style = doc.createElement('style');
-    style.textContent = css;
-    head.appendChild(style);
-    
-    const body = doc.body || doc.createElement('body');
-    const script = doc.createElement('script');
-    script.textContent = js;
-    body.appendChild(script);
-
-    if (!doc.head) doc.documentElement.prepend(head);
-    if (!doc.body) doc.documentElement.appendChild(body);
-
-    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
+    // This is a server-safe way to construct the HTML for the iframe.
+    // It avoids using DOMParser on the server.
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>${css}</style>
+        </head>
+        <body>
+          ${html}
+          <script>${js}</script>
+        </body>
+      </html>
+    `;
   }, [html, css, js]);
 
 
