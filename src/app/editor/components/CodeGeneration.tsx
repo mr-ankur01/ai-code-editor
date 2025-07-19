@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type Language = 'html' | 'css' | 'js' | 'javascript' | 'python';
 
 interface CodeGenerationProps {
-  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: Language) => void;
+  setEditorCode: (code: string | {html: string}, language?: Language) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
 }
 
@@ -21,12 +21,6 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<Language>('javascript');
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (activeWebLanguage) {
-      setLanguage(activeWebLanguage);
-    }
-  }, [activeWebLanguage]);
 
   const handleGenerateCode = async () => {
     if (!prompt.trim()) {
@@ -41,7 +35,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
     try {
       if(activeWebLanguage) {
         const result = await generateWebCode({ prompt });
-        setEditorCode(result);
+        setEditorCode(result, 'html');
       } else {
         const result = await generateCode({ prompt, language });
         setEditorCode(result.code, language);
@@ -71,7 +65,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
         <Textarea
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder="e.g., 'A simple counter button' or 'a javascript function to reverse a string'"
+          placeholder={activeWebLanguage ? "e.g., 'A simple counter button'" : "e.g., 'a javascript function to reverse a string'"}
           className="flex-grow resize-none"
           disabled={isLoading}
         />

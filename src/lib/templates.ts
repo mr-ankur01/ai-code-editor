@@ -1,56 +1,70 @@
 export const templates = {
   web: {
-    html: `<!-- HTML -->
-<div class="container">
-  <h1>Hello, Web!</h1>
-  <p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
-  <button id="action-btn">Click Me!</button>
-</div>`,
-    css: `/* CSS */
-body { 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
-  display: grid;
-  place-content: center;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f0f2f5;
-  color: #1c1e21;
-  transition: background-color 0.3s ease;
-}
-.container {
-  text-align: center;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-button {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-button:hover {
-  background-color: #0056b3;
-}`,
-    js: `// JavaScript
-const button = document.getElementById('action-btn');
-const heading = document.querySelector('h1');
-const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5', '#fff3e0'];
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Project</title>
+  <style>
+    /* CSS */
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
+      display: grid;
+      place-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f2f5;
+      color: #1c1e21;
+      transition: background-color 0.3s ease;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <!-- HTML -->
+  <div class="container">
+    <h1>Hello, Web!</h1>
+    <p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
+    <button id="action-btn">Click Me!</button>
+  </div>
+  <script>
+    // JavaScript
+    const button = document.getElementById('action-btn');
+    const heading = document.querySelector('h1');
+    const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5', '#fff3e0'];
 
-let clickCount = 0;
+    let clickCount = 0;
 
-button.addEventListener('click', () => {
-  clickCount++;
-  heading.textContent = \`Clicked \${clickCount} times\`;
-  document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-});`
+    button.addEventListener('click', () => {
+      clickCount++;
+      heading.textContent = \`Clicked \${clickCount} times\`;
+      document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    });
+  </script>
+</body>
+</html>`,
   },
   python: `# Welcome to GenEdit!
 # Try asking the AI to 'create a class for a Dog with a bark method'.

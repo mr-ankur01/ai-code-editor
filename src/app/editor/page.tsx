@@ -24,12 +24,9 @@ function EditorView() {
   const [terminalOutput, setTerminalOutput] = useState('');
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  // Web editor state
+  // Web editor state (now just a single HTML file)
   const [html, setHtml] = useState(templates.web.html);
-  const [css, setCss] = useState(templates.web.css);
-  const [js, setJs] = useState(templates.web.js);
-  const [activeWebTab, setActiveWebTab] = useState<WebLanguage>('html');
-
+  
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
       const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
@@ -50,8 +47,6 @@ function EditorView() {
       }
     } else if (template === 'web') {
       setHtml(templates.web.html);
-      setCss(templates.web.css);
-      setJs(templates.web.js);
     } else {
       setCode(templates.react);
       setLanguage('javascript');
@@ -70,18 +65,10 @@ function EditorView() {
   const handleRunCode = () => {
     setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
   };
-
-  const setWebEditorCode = (newCode: string, lang: WebLanguage) => {
-    if (lang === 'html') setHtml(newCode);
-    else if (lang === 'css') setCss(newCode);
-    else if (lang === 'js') setJs(newCode);
-  };
   
-  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}, targetLanguage?: WebLanguage | 'javascript' | 'python') => {
-      if(template === 'web' && typeof newCode === 'object') {
+  const handleAIPanelCodeChange = (newCode: string | {html: string}, targetLanguage?: 'html' | 'javascript' | 'python') => {
+      if(template === 'web' && typeof newCode === 'object' && 'html' in newCode) {
         setHtml(newCode.html);
-        setCss(newCode.css);
-        setJs(newCode.js);
       } else if (typeof newCode === 'string') {
         setCode(newCode);
       }
@@ -96,22 +83,18 @@ function EditorView() {
             <SidebarInset>
               <main className="flex-grow p-2 overflow-hidden">
                   <WebEditor 
-                    setEditorCode={setWebEditorCode}
+                    setEditorCode={setHtml}
                     html={html}
-                    css={css}
-                    js={js}
-                    activeTab={activeWebTab}
-                    onTabChange={setActiveWebTab}
                   />
               </main>
             </SidebarInset>
              <Sidebar side="right" collapsible="icon">
               <SidebarContent className="p-0">
                  <AIPanel
-                    editorCode={activeWebTab === 'html' ? html : activeWebTab === 'css' ? css : js}
+                    editorCode={html}
                     setEditorCode={handleAIPanelCodeChange}
                     getSelectedText={() => ""} // TODO: Implement for multi-file editor
-                    activeWebLanguage={activeWebTab}
+                    activeWebLanguage={'html'}
                   />
               </SidebarContent>
             </Sidebar>

@@ -16,9 +16,7 @@ const GenerateWebCodeInputSchema = z.object({
 export type GenerateWebCodeInput = z.infer<typeof GenerateWebCodeInputSchema>;
 
 const GenerateWebCodeOutputSchema = z.object({
-  html: z.string().describe('The complete HTML code for the component. This should only include the content for the <body> tag, not the full HTML document structure.'),
-  css: z.string().describe('The complete, self-contained CSS code to style the component.'),
-  js: z.string().describe('The complete, self-contained JavaScript code for any interactivity.'),
+  html: z.string().describe('The complete, self-contained HTML document. This should be a single file including <html>, <head>, <body>, <style>, and <script> tags as needed.'),
 });
 export type GenerateWebCodeOutput = z.infer<typeof GenerateWebCodeOutputSchema>;
 
@@ -30,12 +28,13 @@ const prompt = ai.definePrompt({
   name: 'generateWebCodePrompt',
   input: {schema: GenerateWebCodeInputSchema},
   output: {schema: GenerateWebCodeOutputSchema},
-  prompt: `You are an expert web developer. Based on the user's prompt, generate a complete, self-contained web component consisting of HTML, CSS, and JavaScript.
+  prompt: `You are an expert web developer. Based on the user's prompt, generate a single, complete, self-contained HTML file.
 
-  Provide the **full and complete code** for all three parts.
-  - The HTML should only be the content for the <body>. Do not include <html>, <head>, or <body> tags.
-  - The CSS should provide all necessary styling for the component.
-  - The JavaScript should handle all interactivity for the component.
+  Provide the **full and complete code** for the HTML document.
+  - The response must be a valid HTML file.
+  - It MUST include all necessary HTML tags like <html>, <head>, and <body>.
+  - All CSS MUST be included inside a <style> tag within the <head>.
+  - All JavaScript MUST be included inside a <script> tag, preferably at the end of the <body>.
 
   Prompt: {{{prompt}}}`,
 });
