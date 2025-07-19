@@ -82,7 +82,7 @@ function EditorView() {
                       Run
                   </Button>
                 </div>
-                <div className="relative flex-grow flex flex-col">
+                <div className="relative flex-grow flex">
                   <Editor
                     ref={editorRef}
                     code={code}
