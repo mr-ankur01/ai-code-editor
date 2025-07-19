@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Sandbox } from './Sandbox';
-import { Monitor } from 'lucide-react';
+import { Monitor, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type Language = 'html' | 'css' | 'js';
 
@@ -19,6 +20,7 @@ interface WebEditorProps {
 
 export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange }: WebEditorProps) {
   const [webContent, setWebContent] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const combinedContent = `
@@ -38,6 +40,10 @@ export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange
     `;
     setWebContent(combinedContent);
   }, [html, css, js]);
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 h-full w-full gap-2">
@@ -77,12 +83,18 @@ export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange
         </Tabs>
       </div>
       <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
-        <div className="flex h-10 items-center justify-start px-3 border-b bg-muted/50">
+        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+          <div className="flex items-center">
             <Monitor className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+          </div>
+          <Button variant="ghost" size="icon" onClick={handleRefresh}>
+            <RefreshCw className="w-4 h-4" />
+            <span className="sr-only">Refresh</span>
+          </Button>
         </div>
         <div className="flex-grow">
-            <Sandbox content={webContent} />
+            <Sandbox key={refreshKey} content={webContent} />
         </div>
       </div>
     </div>
