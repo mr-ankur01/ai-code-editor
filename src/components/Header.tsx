@@ -10,9 +10,25 @@ interface HeaderProps {
   showSidebarToggle?: boolean;
 }
 
-function HeaderContent({ showBack, showSidebarToggle }: HeaderProps) {
-    const sidebar = showSidebarToggle ? useSidebar() : null;
+// This component uses the useSidebar hook and should only be rendered when showSidebarToggle is true.
+function SidebarToggle() {
+    const sidebar = useSidebar();
 
+    if (!sidebar) {
+        return null;
+    }
+
+    return (
+        <SidebarTrigger asChild>
+          <Button variant="ghost" size="icon">
+            {sidebar.open ? <PanelRight /> : <PanelLeft />}
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
+        </SidebarTrigger>
+    )
+}
+
+export function Header({ showBack = false, showSidebarToggle = false }: HeaderProps) {
     return (
       <header className="flex h-16 items-center justify-between px-4 border-b shrink-0">
         <div className="flex items-center gap-4">
@@ -29,21 +45,9 @@ function HeaderContent({ showBack, showSidebarToggle }: HeaderProps) {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          {showSidebarToggle && sidebar && (
-            <SidebarTrigger asChild>
-              <Button variant="ghost" size="icon">
-                {sidebar.open ? <PanelRight /> : <PanelLeft />}
-                <span className="sr-only">Toggle Sidebar</span>
-              </Button>
-            </SidebarTrigger>
-          )}
+          {showSidebarToggle && <SidebarToggle />}
           <ThemeToggle />
         </div>
       </header>
     )
-}
-
-
-export function Header({ showBack = false, showSidebarToggle = false }: HeaderProps) {
-  return <HeaderContent showBack={showBack} showSidebarToggle={showSidebarToggle} />;
 }
