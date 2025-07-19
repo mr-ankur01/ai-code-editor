@@ -11,9 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 interface CodeGenerationProps {
   setEditorCode: (code: string | {html: string, css: string, js: string}, language?: string) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
+  language?: string;
 }
 
-export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerationProps) {
+export function CodeGeneration({ setEditorCode, activeWebLanguage, language }: CodeGenerationProps) {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -33,7 +34,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
         const result = await generateWebCode({ prompt });
         setEditorCode(result);
       } else {
-        const result = await generateCode({ prompt });
+        const result = await generateCode({ prompt, language });
         setEditorCode(result.code);
       }
       toast({
@@ -61,7 +62,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
         <Textarea
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder={activeWebLanguage ? "e.g., 'A simple counter button'" : "e.g., 'a javascript function to reverse a string'"}
+          placeholder={activeWebLanguage ? "e.g., 'A simple counter button'" : `e.g., 'a ${language || 'javascript'} function to reverse a string'`}
           className="flex-grow resize-none"
           disabled={isLoading}
         />

@@ -37,17 +37,16 @@ function EditorView() {
       switch (template) {
         case 'python':
           setLanguage('python');
-          setTerminalOutput('# Python script output will appear here.');
           break;
         case 'react':
             setLanguage('javascript');
-            setTerminalOutput('// React output will render in the website output tab.');
             break;
         case 'vue':
             setLanguage('html');
-            setTerminalOutput('// Vue output will render in the website output tab.');
             break;
       }
+      setTerminalOutput(`> Running ${template}...\n(Execution is simulated)`);
+
     } else if (template === 'web') {
       setHtml(templates.web.html);
       setCss(templates.web.css);
@@ -55,6 +54,7 @@ function EditorView() {
     } else {
       setCode(templates.react);
       setLanguage('javascript');
+      setTerminalOutput(`> Running react...\n(Execution is simulated)`);
     }
   }, [template]);
 
@@ -68,7 +68,7 @@ function EditorView() {
   };
   
   const handleRunCode = () => {
-    setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
+    setTerminalOutput(`> Running ${language} code...\n(Execution is simulated)`);
   };
   
   const handleWebEditorCodeChange = (newCode: string, language: 'html' | 'css' | 'js') => {
@@ -166,6 +166,7 @@ function EditorView() {
                   editorCode={code}
                   setEditorCode={handleAIPanelCodeChange}
                   getSelectedText={getSelectedText}
+                  language={language}
                 />
             </SidebarContent>
           </Sidebar>
