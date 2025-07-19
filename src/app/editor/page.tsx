@@ -77,13 +77,12 @@ function EditorView() {
     else if (lang === 'js') setJs(newCode);
   };
   
-  const handleAIPanelCodeChange = (newCode: string, targetLanguage?: WebLanguage | 'javascript' | 'python') => {
-      if(template === 'web') {
-        const lang = targetLanguage as WebLanguage ?? activeWebTab;
-        if (lang === 'html') setHtml(newCode);
-        else if (lang === 'css') setCss(newCode);
-        else if (lang === 'js') setJs(newCode);
-      } else {
+  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}, targetLanguage?: WebLanguage | 'javascript' | 'python') => {
+      if(template === 'web' && typeof newCode === 'object') {
+        setHtml(newCode.html);
+        setCss(newCode.css);
+        setJs(newCode.js);
+      } else if (typeof newCode === 'string') {
         setCode(newCode);
       }
   }

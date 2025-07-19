@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { generateCode } from '@/ai/flows/generate-code-from-prompt';
+import { generateWebCode } from '@/ai/flows/generate-web-code-from-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Loader } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type Language = 'html' | 'css' | 'js' | 'javascript' | 'python';
 
 interface CodeGenerationProps {
-  setEditorCode: (code: string, language?: Language) => void;
+  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: Language) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
 }
 
@@ -38,8 +39,13 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
     }
     setIsLoading(true);
     try {
-      const result = await generateCode({ prompt, language });
-      setEditorCode(result.code, language);
+      if(activeWebLanguage) {
+        const result = await generateWebCode({ prompt });
+        setEditorCode(result);
+      } else {
+        const result = await generateCode({ prompt, language });
+        setEditorCode(result.code, language);
+      }
       toast({
         title: 'Code Generated',
         description: 'The generated code has been added to the editor.',
@@ -65,11 +71,11 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
         <Textarea
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder="e.g., 'a javascript function to reverse a string'"
+          placeholder="e.g., 'A simple counter button' or 'a javascript function to reverse a string'"
           className="flex-grow resize-none"
           disabled={isLoading}
         />
-        {activeWebLanguage && (
+        {!activeWebLanguage && (
            <Select 
              value={language} 
              onValueChange={(value) => setLanguage(value as Language)}
@@ -79,9 +85,8 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="html">HTML</SelectItem>
-              <SelectItem value="css">CSS</SelectItem>
-              <SelectItem value="js">JavaScript</SelectItem>
+              <SelectItem value="javascript">JavaScript</SelectItem>
+              <SelectItem value="python">Python</SelectItem>
             </SelectContent>
           </Select>
         )}
