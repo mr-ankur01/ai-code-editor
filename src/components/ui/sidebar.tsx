@@ -135,7 +135,7 @@ const SidebarProvider = React.forwardRef<
           <div
             style={
               {
-                "--sidebar-width": SIDEBAR_WIDTH,
+                "--sidebar-width": "20rem", // Increased width
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
                 ...style,
               } as React.CSSProperties
@@ -260,23 +260,24 @@ const Sidebar = React.forwardRef<
 Sidebar.displayName = "Sidebar"
 
 const SidebarTrigger = React.forwardRef<
-  React.ElementRef<typeof Button>,
+  HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, asChild, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
-  const Comp = asChild ? Slot : 'button';
   
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onClick?.(event)
+    if (onClick) {
+       onClick(event)
+    }
     toggleSidebar()
   }
 
   if (asChild) {
-    return (
-        <Slot onClick={handleClick} {...props} ref={ref}>
-            {props.children}
-        </Slot>
-    )
+     const child = React.Children.only(props.children)
+      return React.cloneElement(child as React.ReactElement, {
+        onClick: handleClick,
+        ref: ref
+      })
   }
 
   return (

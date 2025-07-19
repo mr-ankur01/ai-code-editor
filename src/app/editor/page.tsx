@@ -61,6 +61,7 @@ function EditorView() {
           <SidebarTrigger asChild>
              <Button variant="ghost" size="icon">
                 <PanelRight />
+                <span className="sr-only">Toggle AI Panel</span>
              </Button>
           </SidebarTrigger>
         </Header>
