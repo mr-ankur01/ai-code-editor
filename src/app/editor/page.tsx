@@ -143,9 +143,11 @@ function EditorView() {
 
     setIsExecuting(true);
     const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
-    setTerminalOutput(`$ Running ${fileName}...\n`);
+    setTerminalOutput(`> Running ${fileName} via API...\n`);
 
     try {
+      // This is where you would call a real code execution API.
+      // For this project, we are calling an AI flow that simulates the execution.
       const result = await simulateCodeExecution({ code, language });
       setTerminalOutput(prev => prev + result.output);
     } catch (error) {
@@ -154,7 +156,7 @@ function EditorView() {
         title: 'Execution Error',
         description: 'The AI failed to simulate the code execution.',
       });
-       setTerminalOutput(prev => prev + 'An error occurred during simulation.');
+       setTerminalOutput(prev => prev + 'An error occurred during API simulation.');
     } finally {
       setIsExecuting(false);
     }
