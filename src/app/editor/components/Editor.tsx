@@ -9,7 +9,7 @@ interface EditorProps {
 export const Editor = forwardRef<HTMLTextAreaElement, EditorProps>(
   ({ code, setCode }, ref) => {
     return (
-      <div className="w-full h-full relative flex-grow">
+      <div className="relative flex-grow">
         <Textarea
           ref={ref}
           value={code}
