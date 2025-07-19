@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for explaining a selected block of code in plain language.
+ * @fileOverview This file defines a Genkit flow for summarizing a selected block of code into key points.
  *
  * - explainCodeSelection - A function that takes a code snippet as input and returns its explanation.
  * - ExplainCodeSelectionInput - The input type for the explainCodeSelection function.
@@ -23,7 +23,7 @@ export type ExplainCodeSelectionInput = z.infer<
 const ExplainCodeSelectionOutputSchema = z.object({
   explanation: z
     .string()
-    .describe('The explanation of the selected code block in plain language.'),
+    .describe('A summary of the code block, presented as a list of points.'),
 });
 export type ExplainCodeSelectionOutput = z.infer<
   typeof ExplainCodeSelectionOutputSchema
@@ -39,9 +39,14 @@ const prompt = ai.definePrompt({
   name: 'explainCodeSelectionPrompt',
   input: {schema: ExplainCodeSelectionInputSchema},
   output: {schema: ExplainCodeSelectionOutputSchema},
-  prompt: `You are an AI code assistant. Explain the following code block in plain language:
+  prompt: `You are an AI code assistant. Summarize the following code block in clear, concise points. Each point should highlight a key aspect of the code's functionality, structure, or purpose.
 
-  {{code}}`,
+Code:
+\`\`\`
+{{{code}}}
+\`\`\`
+
+Summary Points:`,
 });
 
 const explainCodeSelectionFlow = ai.defineFlow(
