@@ -8,21 +8,25 @@ import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play, Monitor, RefreshCw } from 'lucide-react';
+import { Play, Monitor, RefreshCw, Loader } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 import { WebEditor } from './components/WebEditor';
 import { Sandbox } from './components/Sandbox';
+import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
+import { useToast } from '@/hooks/use-toast';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
 function EditorView() {
   const searchParams = useSearchParams();
   const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
+  const { toast } = useToast();
   
   // Single file editor state
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [terminalOutput, setTerminalOutput] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   // Web editor state
@@ -122,12 +126,37 @@ function EditorView() {
     return '';
   };
   
-  const handleRunCode = () => {
+  const handleRunCode = async () => {
     if (template === 'react') {
       setRefreshKey(prev => prev + 1);
-    } else {
-      const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`
-      setTerminalOutput(`$ Running ${fileName}...\n(Execution is simulated)\n\nHello, World!`);
+      return;
+    }
+    
+    if (!code.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'No code to run',
+        description: 'Please write some code in the editor before running.',
+      });
+      return;
+    }
+
+    setIsExecuting(true);
+    const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
+    setTerminalOutput(`$ Running ${fileName}...\n`);
+
+    try {
+      const result = await simulateCodeExecution({ code, language });
+      setTerminalOutput(prev => prev + result.output);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Execution Error',
+        description: 'The AI failed to simulate the code execution.',
+      });
+       setTerminalOutput(prev => prev + 'An error occurred during simulation.');
+    } finally {
+      setIsExecuting(false);
     }
   };
   
@@ -202,8 +231,8 @@ function EditorView() {
                     {template === 'react' ? 'React.js' : language}
                   </div>
                    {template !== 'react' && (
-                    <Button size="sm" onClick={handleRunCode}>
-                      <Play className="w-4 h-4 mr-2" />
+                    <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
+                      {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
                       Run
                     </Button>
                   )}
