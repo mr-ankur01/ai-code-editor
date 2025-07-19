@@ -61,10 +61,6 @@ function EditorView() {
             setLanguage('csharp');
             break;
       }
-      if (template !== 'react') {
-        setTerminalOutput(`> Running ${template}...\n(Execution is simulated)`);
-      }
-
     } else if (template === 'web') {
       setHtml(templates.web.html);
       setCss(templates.web.css);
@@ -99,7 +95,7 @@ function EditorView() {
             }
           </style>
           <script src="https://unpkg.com/react@${reactVersion}/umd/react.development.js" crossorigin></script>
-          <script src="https://unpkg.com/react-dom@${reactVersion}/umd/react-dom.development.js" crossorigin></script>
+          <script src="https://unpkg.com/react-dom@${reactVersion}/umd/react.dom.development.js" crossorigin></script>
           <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
         </head>
         <body>
@@ -130,7 +126,8 @@ function EditorView() {
     if (template === 'react') {
       setRefreshKey(prev => prev + 1);
     } else {
-      setTerminalOutput(`> Running ${language} code...\n(Execution is simulated)`);
+      const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`
+      setTerminalOutput(`$ Running ${fileName}...\n(Execution is simulated)\n\nHello, World!`);
     }
   };
   
