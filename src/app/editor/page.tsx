@@ -83,26 +83,38 @@ function EditorView() {
     const reactVersion = '18.3.1';
     
     // This style will be injected into the iframe's head.
-    // It makes the iframe's theme match the main app's theme.
+    // It makes the iframe's theme match the main app's theme by providing the necessary CSS variables.
     const themeStyles = `
-        body { 
-          font-family: sans-serif; 
-          background-color: hsl(var(--background));
-          color: hsl(var(--foreground));
-          transition: background-color 0.2s, color 0.2s;
-        }
-        #root { padding: 1rem; }
-        button {
-            background-color: hsl(var(--primary));
-            color: hsl(var(--primary-foreground));
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
+      :root {
+        --background: 240 10% 98%;
+        --foreground: 222.2 84% 4.9%;
+        --primary: 210 90% 55%;
+        --primary-foreground: 210 40% 98%;
+      }
+      .dark {
+        --background: 20 14% 6%;
+        --foreground: 20 5% 94%;
+        --primary: 35 91% 55%;
+        --primary-foreground: 35 10% 98%;
+      }
+      body { 
+        font-family: sans-serif; 
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        transition: background-color 0.2s, color 0.2s;
+      }
+      #root { padding: 1rem; }
+      button {
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
     `;
 
     return `
@@ -333,5 +345,7 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
 
     
