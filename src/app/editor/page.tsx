@@ -12,13 +12,23 @@ import { Play } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 import { WebEditor } from './components/WebEditor';
 
+type WebLanguage = 'html' | 'css' | 'js';
+
 function EditorView() {
   const searchParams = useSearchParams();
   const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
+  
+  // Single file editor state
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [terminalOutput, setTerminalOutput] = useState('');
   const editorRef = useRef<HTMLTextAreaElement>(null);
+
+  // Web editor state
+  const [html, setHtml] = useState(templates.web.html);
+  const [css, setCss] = useState(templates.web.css);
+  const [js, setJs] = useState(templates.web.js);
+  const [activeWebTab, setActiveWebTab] = useState<WebLanguage>('html');
 
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
@@ -38,7 +48,11 @@ function EditorView() {
             setTerminalOutput('// Vue output will render in the website output tab.');
             break;
       }
-    } else if (template !== 'web') {
+    } else if (template === 'web') {
+      setHtml(templates.web.html);
+      setCss(templates.web.css);
+      setJs(templates.web.js);
+    } else {
       setCode(templates.react);
       setLanguage('javascript');
     }
@@ -49,12 +63,30 @@ function EditorView() {
       const { selectionStart, selectionEnd } = editorRef.current;
       return editorRef.current.value.substring(selectionStart, selectionEnd);
     }
+    // TODO: Implement for multi-file editor
     return '';
   };
   
   const handleRunCode = () => {
     setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
   };
+
+  const setWebEditorCode = (newCode: string, lang: WebLanguage) => {
+    if (lang === 'html') setHtml(newCode);
+    else if (lang === 'css') setCss(newCode);
+    else if (lang === 'js') setJs(newCode);
+  };
+  
+  const handleAIPanelCodeChange = (newCode: string, targetLanguage?: WebLanguage | 'javascript' | 'python') => {
+      if(template === 'web') {
+        const lang = targetLanguage as WebLanguage ?? activeWebTab;
+        if (lang === 'html') setHtml(newCode);
+        else if (lang === 'css') setCss(newCode);
+        else if (lang === 'js') setJs(newCode);
+      } else {
+        setCode(newCode);
+      }
+  }
 
   if (template === 'web') {
     return (
@@ -64,15 +96,23 @@ function EditorView() {
           <div className="flex flex-grow overflow-hidden">
             <SidebarInset>
               <main className="flex-grow p-2 overflow-hidden">
-                  <WebEditor />
+                  <WebEditor 
+                    setEditorCode={setWebEditorCode}
+                    html={html}
+                    css={css}
+                    js={js}
+                    activeTab={activeWebTab}
+                    onTabChange={setActiveWebTab}
+                  />
               </main>
             </SidebarInset>
              <Sidebar side="right" collapsible="icon">
               <SidebarContent className="p-0">
                  <AIPanel
-                    editorCode={""} // Not applicable for multi-file editor
-                    setEditorCode={() => {}} // Handled inside WebEditor
-                    getSelectedText={() => ""} // Handled inside WebEditor
+                    editorCode={activeWebTab === 'html' ? html : activeWebTab === 'css' ? css : js}
+                    setEditorCode={handleAIPanelCodeChange}
+                    getSelectedText={() => ""} // TODO: Implement for multi-file editor
+                    activeWebLanguage={activeWebTab}
                   />
               </SidebarContent>
             </Sidebar>

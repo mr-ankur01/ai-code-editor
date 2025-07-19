@@ -6,10 +6,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sandbox } from './Sandbox';
 import { templates } from '@/lib/templates';
 
-export function WebEditor() {
-  const [html, setHtml] = useState(templates.web.html);
-  const [css, setCss] = useState(templates.web.css);
-  const [js, setJs] = useState(templates.web.js);
+type Language = 'html' | 'css' | 'js';
+
+interface WebEditorProps {
+    setEditorCode: (code: string, language: Language) => void;
+    html: string;
+    css: string;
+    js: string;
+    activeTab: Language;
+    onTabChange: (tab: Language) => void;
+}
+
+export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange }: WebEditorProps) {
   const [webContent, setWebContent] = useState('');
 
   useEffect(() => {
@@ -34,7 +42,7 @@ export function WebEditor() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 h-full w-full gap-2">
       <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
-        <Tabs defaultValue="html" className="w-full h-full flex flex-col">
+        <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as Language)} className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="html">HTML</TabsTrigger>
             <TabsTrigger value="css">CSS</TabsTrigger>
@@ -44,7 +52,7 @@ export function WebEditor() {
             <TabsContent value="html" className="absolute inset-0 m-0">
                <Textarea
                 value={html}
-                onChange={(e) => setHtml(e.target.value)}
+                onChange={(e) => setEditorCode(e.target.value, 'html')}
                 placeholder="<!-- HTML code here... -->"
                 className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
               />
@@ -52,7 +60,7 @@ export function WebEditor() {
             <TabsContent value="css" className="absolute inset-0 m-0">
                <Textarea
                 value={css}
-                onChange={(e) => setCss(e.target.value)}
+                onChange={(e) => setEditorCode(e.target.value, 'css')}
                 placeholder="/* CSS code here... */"
                 className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
               />
@@ -60,7 +68,7 @@ export function WebEditor() {
             <TabsContent value="js" className="absolute inset-0 m-0">
                <Textarea
                 value={js}
-                onChange={(e) => setJs(e.target.value)}
+                onChange={(e) => setEditorCode(e.target.value, 'js')}
                 placeholder="// JavaScript code here..."
                 className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
               />

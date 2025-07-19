@@ -6,11 +6,12 @@ import { Bot, Sparkles, MessageSquare } from 'lucide-react';
 
 interface AIPanelProps {
   editorCode: string;
-  setEditorCode: (code: string) => void;
+  setEditorCode: (code: string, language?: 'html' | 'css' | 'js') => void;
   getSelectedText: () => string;
+  activeWebLanguage?: 'html' | 'css' | 'js';
 }
 
-export function AIPanel({ editorCode, setEditorCode, getSelectedText }: AIPanelProps) {
+export function AIPanel({ editorCode, setEditorCode, getSelectedText, activeWebLanguage }: AIPanelProps) {
   return (
     <Tabs defaultValue="generate" className="w-full h-full flex flex-col">
       <TabsList className="grid w-full grid-cols-3">
@@ -20,7 +21,7 @@ export function AIPanel({ editorCode, setEditorCode, getSelectedText }: AIPanelP
       </TabsList>
       <div className="flex-grow mt-2 overflow-y-auto p-1">
         <TabsContent value="generate">
-          <CodeGeneration setEditorCode={setEditorCode} />
+          <CodeGeneration setEditorCode={setEditorCode} activeWebLanguage={activeWebLanguage} />
         </TabsContent>
         <TabsContent value="explain">
           <CodeExplanation editorCode={editorCode} getSelectedText={getSelectedText} />
