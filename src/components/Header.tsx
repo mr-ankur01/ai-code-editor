@@ -14,7 +14,7 @@ function HeaderContent({ showBack, showSidebarToggle }: HeaderProps) {
     const sidebar = showSidebarToggle ? useSidebar() : null;
 
     return (
-      <header className="flex h-16 items-center justify-between px-4 md:px-6 border-b shrink-0">
+      <header className="flex h-16 items-center justify-between px-4 border-b shrink-0">
         <div className="flex items-center gap-4">
           {showBack && (
              <Button variant="ghost" size="icon" asChild>
