@@ -18,7 +18,7 @@ export const Editor = forwardRef<HTMLTextAreaElement, EditorProps>(
           className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
           spellCheck="false"
           autoCorrect="off"
-          autoCapitalize="none"
+          autoCapitalize="off"
         />
       </div>
     );

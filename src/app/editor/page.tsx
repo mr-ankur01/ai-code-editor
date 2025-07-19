@@ -60,7 +60,6 @@ function EditorView() {
         <Header showBack={true}>
           <SidebarTrigger>
             <PanelRight />
-            <span className="sr-only">Toggle AI Panel</span>
           </SidebarTrigger>
         </Header>
         <div className="flex flex-grow overflow-hidden">
