@@ -61,7 +61,7 @@ export function CodeExplanation({ editorCode, getSelectedText }: CodeExplanation
         <ScrollArea className="flex-grow rounded-md border p-4 bg-muted/50">
           {isLoading && <p className="text-muted-foreground animate-pulse">Analyzing code...</p>}
           {explanation ? (
-            <p className="text-sm whitespace-pre-wrap">{explanation}</p>
+            <div className="text-sm whitespace-pre-wrap">{explanation}</div>
           ) : (
             !isLoading && <p className="text-sm text-muted-foreground">The explanation will appear here.</p>
           )}
