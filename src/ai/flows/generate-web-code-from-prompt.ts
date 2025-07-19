@@ -36,6 +36,7 @@ const prompt = ai.definePrompt({
   - The HTML should be a complete document, starting with <!DOCTYPE html> and ending with </html>.
   - The CSS should be complete.
   - The JavaScript should be complete and manipulate the HTML. The user will inject it separately, so you do not need to add a <script> tag for it in the HTML.
+  - For any placeholder images, use the format 'https://placehold.co/WIDTHxHEIGHT.png' (e.g., https://placehold.co/600x400.png).
 
   Prompt: {{{prompt}}}`,
 });
