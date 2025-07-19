@@ -272,12 +272,14 @@ function EditorView() {
                   )}
                 </div>
                 <div className="relative flex-1">
-                  <Editor
-                    ref={editorRef}
-                    code={code}
-                    setCode={setCode}
-                    language={language}
-                  />
+                  <div className="absolute inset-0">
+                    <Editor
+                      ref={editorRef}
+                      code={code}
+                      setCode={setCode}
+                      language={language}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
