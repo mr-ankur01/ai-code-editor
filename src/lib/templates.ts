@@ -64,4 +64,67 @@ greet("World")
 </body>
 </html>
 `,
+  react: `import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+// NOTE: This is a simulated React environment. 
+// For a full Next.js app, use a proper setup.
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h1>React Counter</h1>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+`,
+  vue: `<div id="app">
+  <h1>{{ message }}</h1>
+  <button @click="reverseMessage">Reverse Message</button>
+</div>
+
+<script src="https://unpkg.com/vue@3"></script>
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        message: 'Hello Vue!'
+      }
+    },
+    methods: {
+      reverseMessage() {
+        this.message = this.message.split('').reverse().join('')
+      }
+    }
+  }).mount('#app')
+</script>
+`,
+  tailwind: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Example</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center h-screen">
+  <div class="text-center space-y-4">
+    <h1 class="text-4xl font-bold text-sky-400">Hello, Tailwind!</h1>
+    <p class="text-slate-400">This is a simple example using Tailwind CSS via CDN.</p>
+    <button class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+      Get Started
+    </button>
+  </div>
+</body>
+</html>
+`,
 };

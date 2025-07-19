@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { TemplateCard } from "@/components/TemplateCard";
-import { Code, Languages, TerminalSquare } from "lucide-react";
+import { Code, Languages, TerminalSquare, Orbit, Box, Wind } from "lucide-react";
 
 export default function Home() {
   return (
@@ -16,9 +16,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="w-full max-w-4xl mt-16">
+        <div className="w-full max-w-6xl mt-16">
           <h2 className="text-2xl font-semibold mb-8">Choose a Template</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             <TemplateCard
               title="JavaScript"
               description="A vanilla JS project ready for the browser."
@@ -36,6 +36,24 @@ export default function Home() {
               description="Create a static webpage from scratch."
               href="/editor?template=html"
               icon={<TerminalSquare className="w-10 h-10 text-primary" />}
+            />
+            <TemplateCard
+              title="React"
+              description="A basic client-side React example."
+              href="/editor?template=react"
+              icon={<Orbit className="w-10 h-10 text-primary" />}
+            />
+            <TemplateCard
+              title="Vue.js"
+              description="Get started with a simple Vue app."
+              href="/editor?template=vue"
+              icon={<Box className="w-10 h-10 text-primary" />}
+            />
+            <TemplateCard
+              title="Tailwind CSS"
+              description="A starter HTML file with Tailwind CSS."
+              href="/editor?template=tailwind"
+              icon={<Wind className="w-10 h-10 text-primary" />}
             />
           </div>
         </div>
