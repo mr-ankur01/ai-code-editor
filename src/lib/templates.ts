@@ -1,12 +1,25 @@
 export const templates = {
-  web: `<!-- Welcome to GenEdit! -->
-<!-- Your HTML, CSS, and JS will render in the 'Website Output' tab below. -->
+  web: `<!-- 
+  Welcome to your Web Project!
+  
+  This editor currently handles one file at a time.
+  To work on your project:
+  1. Paste the HTML content here to see the structure.
+  2. To edit CSS, replace the content with your CSS code.
+  3. To edit JS, replace the content with your JavaScript code.
+  
+  The 'Website Output' will render this HTML, which links to style.css and script.js.
+  For a true multi-file experience, this functionality would need to be built out.
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GenEdit Sandbox</title>
+  <title>GenEdit Web Project</title>
+  <!-- The editor doesn't host separate files, so these links are for structure. -->
+  <!-- <link rel="stylesheet" href="style.css"> -->
   <style>
     /* CSS */
     body { 
@@ -51,6 +64,7 @@ export const templates = {
     <button id="action-btn">Click Me!</button>
   </div>
 
+  <!-- <script src="script.js"></script> -->
   <script>
     // JavaScript
     const button = document.getElementById('action-btn');
