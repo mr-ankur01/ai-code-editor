@@ -155,7 +155,7 @@ function EditorView() {
                 </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-                <OutputTabs terminalOutput={terminalOutput} webContent={code} />
+                <OutputTabs terminalOutput={terminalOutput} />
               </div>
             </main>
           </SidebarInset>
