@@ -25,7 +25,7 @@ function HeaderContent({ showBack, showSidebarToggle }: HeaderProps) {
             </Button>
           )}
           <Link href="/" className="text-xl font-bold font-headline hover:text-primary transition-colors">
-            GenEdit
+            Codex
           </Link>
         </div>
         <div className="flex items-center gap-4">

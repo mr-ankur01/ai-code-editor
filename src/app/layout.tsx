@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'GenEdit',
+  title: 'Codex',
   description: 'An AI-powered code editor',
 };
 

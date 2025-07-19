@@ -5,7 +5,7 @@ export const templates = {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GenEdit Web Project</title>
+  <title>Codex Web Project</title>
 </head>
 <body>
   <h1>Hello, Web!</h1>
@@ -57,7 +57,7 @@ button.addEventListener('click', () => {
   document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 });`,
   },
-  python: `# Welcome to GenEdit!
+  python: `# Welcome to Codex!
 # Try asking the AI to 'create a class for a Dog with a bark method'.
 
 def greet(name):
