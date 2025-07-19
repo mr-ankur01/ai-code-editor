@@ -40,6 +40,11 @@ function EditorView() {
 
   // Sandbox state
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
@@ -86,13 +91,13 @@ function EditorView() {
         --card-foreground: 222.2 84% 4.9%;
         --popover: 0 0% 100%;
         --popover-foreground: 222.2 84% 4.9%;
-        --primary: 210 90% 55%;
+        --primary: 210 90% 55%; /* Muted Blue */
         --primary-foreground: 210 40% 98%;
         --secondary: 210 40% 96.1%;
         --secondary-foreground: 210 40% 9%;
         --muted: 210 40% 96.1%;
         --muted-foreground: 210 40% 45.1%;
-        --accent: 210 90% 90%;
+        --accent: 210 90% 90%; /* Lighter Blue */
         --accent-foreground: 210 90% 25%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
@@ -114,7 +119,7 @@ function EditorView() {
         --secondary-foreground: 20 5% 98%;
         --muted: 20 10% 15%;
         --muted-foreground: 20 5% 64%;
-        --accent: 210 90% 15%;
+        --accent: 210 90% 15%; /* Darker Blue */
         --accent-foreground: 210 90% 85%;
         --destructive: 0 72% 51%;
         --destructive-foreground: 0 0% 98%;
@@ -144,7 +149,7 @@ function EditorView() {
     `;
 
   const sandboxedReactHtml = useMemo(() => {
-    if (template !== 'react') return '';
+    if (template !== 'react' || !isMounted) return '';
     const reactVersion = '18.3.1';
     
     return `
@@ -170,9 +175,10 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [code, template, resolvedTheme, themeStyles]);
+  }, [code, template, resolvedTheme, themeStyles, isMounted]);
 
   const sandboxedWebHtml = useMemo(() => {
+    if (!isMounted) return '';
     return `
       <!DOCTYPE html>
       <html class="${resolvedTheme}">
@@ -188,7 +194,7 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [html, css, js, resolvedTheme, themeStyles]);
+  }, [html, css, js, resolvedTheme, themeStyles, isMounted]);
 
 
   const getSelectedText = () => {
@@ -204,7 +210,7 @@ function EditorView() {
   };
   
   const handleRunCode = async () => {
-    if (template === 'react') {
+    if (template === 'react' || template === 'web' || template === 'vue') {
       setRefreshKey(prev => prev + 1);
       return;
     }
@@ -291,7 +297,7 @@ function EditorView() {
                         </Button>
                       </div>
                       <div className="flex-grow">
-                          <Sandbox key={refreshKey} content={sandboxedWebHtml} />
+                          {isMounted ? <Sandbox key={refreshKey} content={sandboxedWebHtml} /> : <Skeleton className="w-full h-full" />}
                       </div>
                     </div>
               </main>
@@ -341,7 +347,7 @@ function EditorView() {
                 </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-                {template === 'react' ? (
+                {template === 'react' || template === 'vue' ? (
                   <div className="flex flex-col h-full">
                     <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
                       <div className="flex items-center">
@@ -354,7 +360,7 @@ function EditorView() {
                       </Button>
                     </div>
                     <div className="flex-grow">
-                      <Sandbox key={refreshKey} content={sandboxedReactHtml} />
+                      {isMounted ? <Sandbox key={refreshKey} content={sandboxedReactHtml} /> : <Skeleton className="w-full h-full" />}
                     </div>
                   </div>
                 ) : (
@@ -406,3 +412,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
