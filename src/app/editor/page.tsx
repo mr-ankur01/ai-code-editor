@@ -10,34 +10,36 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
+import { WebEditor } from './components/WebEditor';
 
 function EditorView() {
   const searchParams = useSearchParams();
-  const template = searchParams.get('template') as keyof typeof templates | null;
+  const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [terminalOutput, setTerminalOutput] = useState('');
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (template && templates[template]) {
-      setCode(templates[template]);
+    if (template && templates[template] && template !== 'web') {
+      const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
+      setCode(templateContent);
       switch (template) {
-        case 'js':
-          setLanguage('javascript');
-          setTerminalOutput('// JavaScript console output will appear here.');
-          break;
         case 'python':
           setLanguage('python');
           setTerminalOutput('# Python script output will appear here.');
           break;
-        case 'html':
-          setLanguage('html');
-          setTerminalOutput('<!-- HTML/CSS will render in the website output tab. -->');
-          break;
+        case 'react':
+            setLanguage('javascript');
+            setTerminalOutput('// React output will render in the website output tab.');
+            break;
+        case 'vue':
+            setLanguage('html');
+            setTerminalOutput('// Vue output will render in the website output tab.');
+            break;
       }
-    } else {
-      setCode(templates.js);
+    } else if (template !== 'web') {
+      setCode(templates.react);
       setLanguage('javascript');
     }
   }, [template]);
@@ -53,6 +55,17 @@ function EditorView() {
   const handleRunCode = () => {
     setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
   };
+
+  if (template === 'web') {
+    return (
+       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
+        <Header showBack={true} />
+        <main className="flex-grow p-2 overflow-hidden">
+            <WebEditor />
+        </main>
+      </div>
+    )
+  }
 
   return (
     <SidebarProvider>
