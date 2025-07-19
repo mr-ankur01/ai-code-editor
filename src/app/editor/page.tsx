@@ -58,12 +58,27 @@ function EditorView() {
 
   if (template === 'web') {
     return (
-       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-        <Header showBack={true} />
-        <main className="flex-grow p-2 overflow-hidden">
-            <WebEditor />
-        </main>
-      </div>
+       <SidebarProvider>
+        <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
+          <Header showBack={true} showSidebarToggle={true} />
+          <div className="flex flex-grow overflow-hidden">
+            <SidebarInset>
+              <main className="flex-grow p-2 overflow-hidden">
+                  <WebEditor />
+              </main>
+            </SidebarInset>
+             <Sidebar side="right" collapsible="icon">
+              <SidebarContent className="p-0">
+                 <AIPanel
+                    editorCode={""} // Not applicable for multi-file editor
+                    setEditorCode={() => {}} // Handled inside WebEditor
+                    getSelectedText={() => ""} // Handled inside WebEditor
+                  />
+              </SidebarContent>
+            </Sidebar>
+          </div>
+        </div>
+      </SidebarProvider>
     )
   }
 
