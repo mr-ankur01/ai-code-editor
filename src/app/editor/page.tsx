@@ -92,8 +92,8 @@ function EditorView() {
         --secondary-foreground: 210 40% 9%;
         --muted: 210 40% 96.1%;
         --muted-foreground: 210 40% 45.1%;
-        --accent: 22 80% 65%;
-        --accent-foreground: 22 47.4% 11.2%;
+        --accent: 210 90% 90%;
+        --accent-foreground: 210 90% 25%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
         --border: 210 40% 89.8%;
@@ -114,8 +114,8 @@ function EditorView() {
         --secondary-foreground: 20 5% 98%;
         --muted: 20 10% 15%;
         --muted-foreground: 20 5% 64%;
-        --accent: 22 80% 55%;
-        --accent-foreground: 22 10% 98%;
+        --accent: 210 90% 15%;
+        --accent-foreground: 210 90% 85%;
         --destructive: 0 72% 51%;
         --destructive-foreground: 0 0% 98%;
         --border: 20 10% 15%;
@@ -173,13 +173,14 @@ function EditorView() {
   }, [code, template, resolvedTheme, themeStyles]);
 
   const sandboxedWebHtml = useMemo(() => {
-    // This is a server-safe way to construct the HTML for the iframe.
-    // It avoids using DOMParser on the server.
     return `
       <!DOCTYPE html>
-      <html>
+      <html class="${resolvedTheme}">
         <head>
-          <style>${css}</style>
+          <style>
+            ${themeStyles}
+            ${css}
+          </style>
         </head>
         <body>
           ${html}
@@ -187,7 +188,7 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [html, css, js]);
+  }, [html, css, js, resolvedTheme, themeStyles]);
 
 
   const getSelectedText = () => {
