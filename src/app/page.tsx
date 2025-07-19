@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { TemplateCard } from "@/components/TemplateCard";
-import { Code, Languages, TerminalSquare, Orbit, Box, Wind } from "lucide-react";
+import { Code, Languages, TerminalSquare, Orbit, Box } from "lucide-react";
 
 export default function Home() {
   return (
@@ -48,12 +48,6 @@ export default function Home() {
               description="Get started with a simple Vue app."
               href="/editor?template=vue"
               icon={<Box className="w-10 h-10 text-primary" />}
-            />
-            <TemplateCard
-              title="Tailwind CSS"
-              description="A starter HTML file with Tailwind CSS."
-              href="/editor?template=tailwind"
-              icon={<Wind className="w-10 h-10 text-primary" />}
             />
           </div>
         </div>
