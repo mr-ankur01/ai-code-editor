@@ -27,7 +27,7 @@ export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Web Project Output</title>
+        <title>Website Output</title>
         <style>${css}</style>
       </head>
       <body>
