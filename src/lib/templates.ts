@@ -1,8 +1,18 @@
 export const templates = {
   web: {
-    html: `<h1>Hello, Web!</h1>
-<p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
-<button id="action-btn">Click Me!</button>`,
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GenEdit Web Project</title>
+</head>
+<body>
+  <h1>Hello, Web!</h1>
+  <p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
+  <button id="action-btn">Click Me!</button>
+</body>
+</html>`,
     css: `body { 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
   display: grid;

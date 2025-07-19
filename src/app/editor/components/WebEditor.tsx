@@ -18,16 +18,26 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
   const [refreshKey, setRefreshKey] = useState(0);
 
   const sandboxedHtml = useMemo(() => {
-    return `<!DOCTYPE html>
-<html>
-  <head>
-    <style>${css}</style>
-  </head>
-  <body>
-    ${html}
-    <script>${js}</script>
-  </body>
-</html>`;
+    // Create a temporary DOM to parse the user's HTML
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    
+    // Inject CSS into the head
+    const head = doc.head || doc.createElement('head');
+    const style = doc.createElement('style');
+    style.textContent = css;
+    head.appendChild(style);
+    
+    // Inject JS into the body
+    const body = doc.body || doc.createElement('body');
+    const script = doc.createElement('script');
+    script.textContent = js;
+    body.appendChild(script);
+
+    // If head/body were created, append them to the html element
+    if (!doc.head) doc.documentElement.prepend(head);
+    if (!doc.body) doc.documentElement.appendChild(body);
+
+    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
   }, [html, css, js]);
   
   const handleRefresh = () => {
@@ -47,7 +57,7 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
             <Textarea
               value={html}
               onChange={(e) => setEditorCode(e.target.value, 'html')}
-              placeholder="<!-- HTML code for the body... -->"
+              placeholder="<!DOCTYPE html>..."
               className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
             />
           </TabsContent>
