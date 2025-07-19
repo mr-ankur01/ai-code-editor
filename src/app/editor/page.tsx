@@ -271,7 +271,7 @@ function EditorView() {
                     </Button>
                   )}
                 </div>
-                <div className="relative flex-grow flex">
+                <div className="relative flex-1">
                   <Editor
                     ref={editorRef}
                     code={code}
@@ -346,3 +346,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
