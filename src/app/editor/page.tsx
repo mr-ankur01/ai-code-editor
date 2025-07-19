@@ -82,53 +82,35 @@ function EditorView() {
     if (template !== 'react') return '';
     const reactVersion = '18.3.1';
     
-    // Determine CSS variable values based on theme
-    const themeStyles = resolvedTheme === 'dark'
-    ? `
-      :root {
-        --primary: 210 40% 70%;
-        --primary-foreground: 210 40% 9%;
-        --background: #222;
-        --card: #333;
-        --text: #eee;
-      }
-    `
-    : `
-      :root {
-        --primary: 210 40% 60%;
-        --primary-foreground: 210 40% 5.9%;
-        --background: #fff;
-        --card: #f8f8f8;
-        --text: #111;
-      }
+    // This style will be injected into the iframe's head.
+    // It makes the iframe's theme match the main app's theme.
+    const themeStyles = `
+        body { 
+          font-family: sans-serif; 
+          background-color: hsl(var(--background));
+          color: hsl(var(--foreground));
+          transition: background-color 0.2s, color 0.2s;
+        }
+        #root { padding: 1rem; }
+        button {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
     `;
 
     return `
       <!DOCTYPE html>
-      <html>
+      <html class="${resolvedTheme}">
         <head>
           <title>React Preview</title>
-          <style>
-            ${themeStyles}
-            body { 
-              font-family: sans-serif; 
-              background-color: var(--background);
-              color: var(--text);
-              transition: background-color 0.2s, color 0.2s;
-            }
-            #root { padding: 1rem; }
-            button {
-                background-color: hsl(var(--primary));
-                color: hsl(var(--primary-foreground));
-                padding: 0.5rem 1rem;
-                border: none;
-                border-radius: 0.5rem;
-                cursor: pointer;
-            }
-            button:hover {
-                opacity: 0.9;
-            }
-          </style>
+          <style>${themeStyles}</style>
           <script src="https://unpkg.com/react@${reactVersion}/umd/react.development.js" crossorigin></script>
           <script src="https://unpkg.com/react-dom@${reactVersion}/umd/react.dom.development.js" crossorigin></script>
           <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
