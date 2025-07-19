@@ -204,10 +204,12 @@ function EditorView() {
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                     {template === 'react' ? 'React.js' : language}
                   </div>
-                  <Button size="sm" onClick={handleRunCode}>
-                      {template === 'react' ? <RefreshCw className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                      {template === 'react' ? 'Refresh' : 'Run'}
-                  </Button>
+                   {template !== 'react' && (
+                    <Button size="sm" onClick={handleRunCode}>
+                      <Play className="w-4 h-4 mr-2" />
+                      Run
+                    </Button>
+                  )}
                 </div>
                 <div className="relative flex-grow flex">
                   <Editor
