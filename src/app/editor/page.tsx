@@ -8,7 +8,8 @@ import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play } from 'lucide-react';
+import { Play, PanelRight } from 'lucide-react';
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 
 function EditorView() {
   const searchParams = useSearchParams();
@@ -54,42 +55,52 @@ function EditorView() {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-      <Header showBack={true} />
-      <main className="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-2 p-2 overflow-hidden">
-        {/* Left Column */}
-        <div className="flex flex-col gap-2 overflow-hidden">
-          <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-2 border-b">
-               <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                 {language}
-               </div>
-               <Button size="sm" onClick={handleRunCode}>
-                  <Play className="w-4 h-4 mr-2" />
-                  Run
-               </Button>
-            </div>
-            <Editor
-              ref={editorRef}
-              code={code}
-              setCode={setCode}
-            />
-          </div>
-          <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-            <OutputTabs terminalOutput={terminalOutput} webContent={code} />
-          </div>
-        </div>
+    <SidebarProvider>
+      <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
+        <Header showBack={true}>
+          <SidebarTrigger asChild>
+             <Button variant="ghost" size="icon">
+                <PanelRight />
+             </Button>
+          </SidebarTrigger>
+        </Header>
+        <div className="flex flex-grow overflow-hidden">
+          <SidebarInset>
+            <main className="flex-grow flex flex-col gap-2 p-2 overflow-hidden">
+              <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between p-2 border-b">
+                  <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                    {language}
+                  </div>
+                  <Button size="sm" onClick={handleRunCode}>
+                      <Play className="w-4 h-4 mr-2" />
+                      Run
+                  </Button>
+                </div>
+                <Editor
+                  ref={editorRef}
+                  code={code}
+                  setCode={setCode}
+                />
+              </div>
+              <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
+                <OutputTabs terminalOutput={terminalOutput} webContent={code} />
+              </div>
+            </main>
+          </SidebarInset>
 
-        {/* Right Column (Side Panel) */}
-        <div className="hidden lg:flex flex-col h-full rounded-lg border bg-card shadow-sm overflow-hidden p-1">
-          <AIPanel
-            editorCode={code}
-            setEditorCode={setCode}
-            getSelectedText={getSelectedText}
-          />
+          <Sidebar side="right" collapsible="icon">
+            <SidebarContent className="p-0">
+               <AIPanel
+                  editorCode={code}
+                  setEditorCode={setCode}
+                  getSelectedText={getSelectedText}
+                />
+            </SidebarContent>
+          </Sidebar>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 }
 

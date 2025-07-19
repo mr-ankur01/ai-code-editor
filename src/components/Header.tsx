@@ -6,9 +6,10 @@ import { ArrowLeft } from 'lucide-react';
 
 interface HeaderProps {
   showBack?: boolean;
+  children?: React.ReactNode;
 }
 
-export function Header({ showBack = false }: HeaderProps) {
+export function Header({ showBack = false, children }: HeaderProps) {
   return (
     <header className="flex h-16 items-center justify-between px-4 md:px-6 border-b shrink-0">
       <div className="flex items-center gap-4">
@@ -25,6 +26,7 @@ export function Header({ showBack = false }: HeaderProps) {
         </Link>
       </div>
       <div className="flex items-center gap-4">
+        {children}
         <ThemeToggle />
       </div>
     </header>
