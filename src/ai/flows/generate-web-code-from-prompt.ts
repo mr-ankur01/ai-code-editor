@@ -16,9 +16,9 @@ const GenerateWebCodeInputSchema = z.object({
 export type GenerateWebCodeInput = z.infer<typeof GenerateWebCodeInputSchema>;
 
 const GenerateWebCodeOutputSchema = z.object({
-  html: z.string().describe('The generated HTML code.'),
-  css: z.string().describe('The generated CSS code.'),
-  js: z.string().describe('The generated JavaScript code.'),
+  html: z.string().describe('The complete, generated HTML code. This should be a full HTML structure, not just a snippet.'),
+  css: z.string().describe('The complete, generated CSS code to style the component. This should be full CSS, not just a snippet.'),
+  js: z.string().describe('The complete, generated JavaScript code for any interactivity. This should be full JS, not just a snippet.'),
 });
 export type GenerateWebCodeOutput = z.infer<typeof GenerateWebCodeOutputSchema>;
 
@@ -32,7 +32,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateWebCodeOutputSchema},
   prompt: `You are an expert web developer. Based on the user's prompt, generate a complete, self-contained web component consisting of HTML, CSS, and JavaScript.
 
-  The HTML should be the structure, the CSS should provide the styling, and the JavaScript should handle any interactivity. Provide code for all three parts.
+  Provide the **full and complete code** for all three parts. Do not use placeholders or omit any code. The HTML should be the complete structure, the CSS should provide all necessary styling, and the JavaScript should handle all interactivity.
 
   Prompt: {{{prompt}}}`,
 });
