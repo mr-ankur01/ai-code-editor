@@ -8,8 +8,8 @@ import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play, PanelRight } from 'lucide-react';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
+import { Play, PanelRight, PanelLeft } from 'lucide-react';
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarInset, useSidebar } from '@/components/ui/sidebar';
 
 function EditorView() {
   const searchParams = useSearchParams();
@@ -54,14 +54,21 @@ function EditorView() {
     setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
   };
 
+  const EditorHeader = () => {
+    const { open } = useSidebar();
+    return (
+      <Header showBack={true}>
+        <SidebarTrigger>
+          {open ? <PanelRight /> : <PanelLeft />}
+        </SidebarTrigger>
+      </Header>
+    )
+  }
+
   return (
     <SidebarProvider>
       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-        <Header showBack={true}>
-          <SidebarTrigger>
-            <PanelRight />
-          </SidebarTrigger>
-        </Header>
+        <EditorHeader />
         <div className="flex flex-grow overflow-hidden">
           <SidebarInset>
             <main className="flex-grow flex flex-col gap-2 p-2 overflow-hidden">
@@ -75,11 +82,13 @@ function EditorView() {
                       Run
                   </Button>
                 </div>
-                <Editor
-                  ref={editorRef}
-                  code={code}
-                  setCode={setCode}
-                />
+                <div className="relative flex-grow flex flex-col">
+                  <Editor
+                    ref={editorRef}
+                    code={code}
+                    setCode={setCode}
+                  />
+                </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
                 <OutputTabs terminalOutput={terminalOutput} webContent={code} />
