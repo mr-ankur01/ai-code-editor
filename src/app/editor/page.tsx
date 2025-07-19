@@ -88,15 +88,47 @@ function EditorView() {
       :root {
         --background: 240 10% 98%;
         --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
         --primary: 210 90% 55%;
         --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 210 40% 9%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 210 40% 45.1%;
+        --accent: 22 80% 65%;
+        --accent-foreground: 22 47.4% 11.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 210 40% 89.8%;
+        --input: 210 40% 89.8%;
+        --ring: 210 90% 55%;
       }
+    
       .dark {
-        --background: 20 14% 6%;
-        --foreground: 20 5% 94%;
-        --primary: 35 91% 55%;
-        --primary-foreground: 35 10% 98%;
+        --background: 20 14% 4%;
+        --foreground: 60 9% 98%;
+        --card: 24 9.8% 10%;
+        --card-foreground: 60 9% 98%;
+        --popover: 24 9.8% 10%;
+        --popover-foreground: 60 9% 98%;
+        --primary: 26 95% 51%;
+        --primary-foreground: 60 9% 98%;
+        --secondary: 12 6.5% 15.1%;
+        --secondary-foreground: 60 9% 98%;
+        --muted: 12 6.5% 15.1%;
+        --muted-foreground: 24 5.4% 63.9%;
+        --accent: 12 6.5% 15.1%;
+        --accent-foreground: 60 9% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 60 9% 98%;
+        --border: 12 6.5% 15.1%;
+        --input: 12 6.5% 15.1%;
+        --ring: 26 95% 51%;
       }
+
       body { 
         font-family: sans-serif; 
         background-color: hsl(var(--background));
@@ -142,6 +174,26 @@ function EditorView() {
     `;
   }, [code, template, resolvedTheme]);
 
+  const sandboxedWebHtml = useMemo(() => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    
+    const head = doc.head || doc.createElement('head');
+    const style = doc.createElement('style');
+    style.textContent = css;
+    head.appendChild(style);
+    
+    const body = doc.body || doc.createElement('body');
+    const script = doc.createElement('script');
+    script.textContent = js;
+    body.appendChild(script);
+
+    if (!doc.head) doc.documentElement.prepend(head);
+    if (!doc.body) doc.documentElement.appendChild(body);
+
+    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
+  }, [html, css, js]);
+
+
   const getSelectedText = () => {
     if (editorRef.current) {
       const model = editorRef.current.getModel();
@@ -174,9 +226,6 @@ function EditorView() {
     setTerminalOutput(`> Running ${fileName}...\n`);
 
     try {
-      // This function call is structured like an API call.
-      // In a real application, you would replace this with a call to your backend service.
-      // For example: `const result = await fetch('/api/execute', { method: 'POST', body: JSON.stringify({ code, language }) })`
       const result = await simulateCodeExecution({ code, language });
       setTerminalOutput(prev => prev + result.output);
     } catch (error) {
@@ -223,14 +272,31 @@ function EditorView() {
           <Header showBack={true} showSidebarToggle={true} />
           <div className="flex flex-grow overflow-hidden">
             <SidebarInset>
-              <main className="flex-grow p-2 overflow-hidden">
-                  <WebEditor 
-                    setEditorCode={handleWebEditorCodeChange}
-                    html={html}
-                    css={css}
-                    js={js}
-                    onTabChange={setActiveWebLanguage}
-                  />
+              <main className="flex-grow p-2 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
+                    <WebEditor 
+                      setEditorCode={handleWebEditorCodeChange}
+                      html={html}
+                      css={css}
+                      js={js}
+                      onTabChange={setActiveWebLanguage}
+                    />
+                  </div>
+                   <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
+                      <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                        <div className="flex items-center">
+                          <Monitor className="w-4 h-4 mr-2" />
+                          <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                          <RefreshCw className="w-4 h-4" />
+                          <span className="sr-only">Refresh</span>
+                        </Button>
+                      </div>
+                      <div className="flex-grow">
+                          <Sandbox key={refreshKey} content={sandboxedWebHtml} />
+                      </div>
+                    </div>
               </main>
             </SidebarInset>
              <Sidebar side="right" collapsible="icon">
@@ -345,7 +411,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
-
-    
