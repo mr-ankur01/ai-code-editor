@@ -1,10 +1,12 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { Textarea } from '@/components/ui/textarea';
+import { useState, useMemo, useEffect } from 'react';
+import MonacoEditor from '@monaco-editor/react';
+import { useTheme } from 'next-themes';
 import { Sandbox } from './Sandbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Monitor, RefreshCw } from 'lucide-react';
+import { Monitor, RefreshCw, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface WebEditorProps {
     setEditorCode: (code: string, language: 'html' | 'css' | 'js') => void;
@@ -16,6 +18,12 @@ interface WebEditorProps {
 
 export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEditorProps) {
   const [refreshKey, setRefreshKey] = useState(0);
+  const { resolvedTheme } = useTheme();
+  const [editorTheme, setEditorTheme] = useState('light');
+
+  useEffect(() => {
+    setEditorTheme(resolvedTheme === 'dark' ? 'vs-dark' : 'light');
+  }, [resolvedTheme]);
 
   const sandboxedHtml = useMemo(() => {
     // Create a temporary DOM to parse the user's HTML
@@ -43,6 +51,18 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
   };
+  
+  const editorOptions = {
+    minimap: { enabled: false },
+    fontSize: 14,
+    wordWrap: 'on',
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
+    padding: {
+      top: 16,
+      bottom: 16,
+    },
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 h-full w-full gap-2">
@@ -54,27 +74,33 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
             <TabsTrigger value="js" className="rounded-none">JavaScript</TabsTrigger>
           </TabsList>
           <TabsContent value="html" className="m-0 flex-grow">
-            <Textarea
+            <MonacoEditor
+              language="html"
               value={html}
-              onChange={(e) => setEditorCode(e.target.value, 'html')}
-              placeholder="<!DOCTYPE html>..."
-              className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
+              onChange={(value) => setEditorCode(value || '', 'html')}
+              theme={editorTheme}
+              options={editorOptions}
+              loading={<Skeleton className="w-full h-full" />}
             />
           </TabsContent>
           <TabsContent value="css" className="m-0 flex-grow">
-            <Textarea
+             <MonacoEditor
+              language="css"
               value={css}
-              onChange={(e) => setEditorCode(e.target.value, 'css')}
-              placeholder="/* CSS styles... */"
-              className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
+              onChange={(value) => setEditorCode(value || '', 'css')}
+              theme={editorTheme}
+              options={editorOptions}
+              loading={<Skeleton className="w-full h-full" />}
             />
           </TabsContent>
           <TabsContent value="js" className="m-0 flex-grow">
-            <Textarea
+             <MonacoEditor
+              language="javascript"
               value={js}
-              onChange={(e) => setEditorCode(e.target.value, 'js')}
-              placeholder="// JavaScript code..."
-              className="w-full h-full p-4 font-code text-sm bg-card border-0 resize-none focus-visible:ring-0 rounded-none"
+              onChange={(value) => setEditorCode(value || '', 'js')}
+              theme={editorTheme}
+              options={editorOptions}
+              loading={<Skeleton className="w-full h-full" />}
             />
           </TabsContent>
         </Tabs>

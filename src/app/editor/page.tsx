@@ -15,6 +15,7 @@ import { WebEditor } from './components/WebEditor';
 import { Sandbox } from './components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -22,13 +23,14 @@ function EditorView() {
   const searchParams = useSearchParams();
   const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
   
   // Single file editor state
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [terminalOutput, setTerminalOutput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
-  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<any>(null);
 
   // Web editor state
   const [html, setHtml] = useState(templates.web.html);
@@ -79,13 +81,41 @@ function EditorView() {
   const sandboxedReactHtml = useMemo(() => {
     if (template !== 'react') return '';
     const reactVersion = '18.3.1';
+    
+    // Determine CSS variable values based on theme
+    const themeStyles = resolvedTheme === 'dark'
+    ? `
+      :root {
+        --primary: 210 40% 70%;
+        --primary-foreground: 210 40% 9%;
+        --background: #222;
+        --card: #333;
+        --text: #eee;
+      }
+    `
+    : `
+      :root {
+        --primary: 210 40% 60%;
+        --primary-foreground: 210 40% 5.9%;
+        --background: #fff;
+        --card: #f8f8f8;
+        --text: #111;
+      }
+    `;
+
     return `
       <!DOCTYPE html>
       <html>
         <head>
           <title>React Preview</title>
           <style>
-            body { font-family: sans-serif; }
+            ${themeStyles}
+            body { 
+              font-family: sans-serif; 
+              background-color: var(--background);
+              color: var(--text);
+              transition: background-color 0.2s, color 0.2s;
+            }
             #root { padding: 1rem; }
             button {
                 background-color: hsl(var(--primary));
@@ -116,12 +146,15 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [code, template]);
+  }, [code, template, resolvedTheme]);
 
   const getSelectedText = () => {
     if (editorRef.current) {
-      const { selectionStart, selectionEnd } = editorRef.current;
-      return editorRef.current.value.substring(selectionStart, selectionEnd);
+      const model = editorRef.current.getModel();
+      const selection = editorRef.current.getSelection();
+      if (model && selection) {
+        return model.getValueInRange(selection);
+      }
     }
     // TODO: Implement for multi-file editor
     return '';
@@ -147,8 +180,6 @@ function EditorView() {
     setTerminalOutput(`> Running ${fileName}...\n`);
 
     try {
-      // This is where you would call a real code execution API.
-      // For this project, we are calling an AI flow that simulates the execution.
       const result = await simulateCodeExecution({ code, language });
       setTerminalOutput(prev => prev + result.output);
     } catch (error) {
@@ -245,6 +276,7 @@ function EditorView() {
                     ref={editorRef}
                     code={code}
                     setCode={setCode}
+                    language={language}
                   />
                 </div>
               </div>
