@@ -1,22 +1,5 @@
 export const templates = {
-  js: `// Welcome to GenEdit!
-// Try asking the AI to 'create a function that calculates fibonacci sequence'.
-
-function greet(name) {
-  console.log(\`Hello, \${name}!\`);
-}
-
-greet('World');
-`,
-  python: `# Welcome to GenEdit!
-# Try asking the AI to 'create a class for a Dog with a bark method'.
-
-def greet(name):
-    print(f"Hello, {name}!")
-
-greet("World")
-`,
-  html: `<!-- Welcome to GenEdit! -->
+  web: `<!-- Welcome to GenEdit! -->
 <!-- Your HTML, CSS, and JS will render in the 'Website Output' tab below. -->
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +8,7 @@ greet("World")
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GenEdit Sandbox</title>
   <style>
+    /* CSS */
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
       display: grid;
@@ -33,36 +17,64 @@ greet("World")
       margin: 0;
       background-color: #f0f2f5;
       color: #1c1e21;
+      transition: background-color 0.3s ease;
     }
     .container {
       text-align: center;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     button {
       margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background-color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
       cursor: pointer;
       font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
+  <!-- HTML -->
   <div class="container">
-    <h1>Hello, World!</h1>
-    <p>This is your sandboxed environment.</p>
-    <button id="color-btn">Change Color</button>
+    <h1>Hello, Web!</h1>
+    <p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
+    <button id="action-btn">Click Me!</button>
   </div>
+
   <script>
-    const btn = document.getElementById('color-btn');
-    const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5'];
-    btn.addEventListener('click', () => {
+    // JavaScript
+    const button = document.getElementById('action-btn');
+    const heading = document.querySelector('h1');
+    const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5', '#fff3e0'];
+    
+    let clickCount = 0;
+
+    button.addEventListener('click', () => {
+      clickCount++;
+      heading.textContent = \`Clicked \${clickCount} times\`;
       document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     });
   </script>
 </body>
 </html>
+`,
+  python: `# Welcome to GenEdit!
+# Try asking the AI to 'create a class for a Dog with a bark method'.
+
+def greet(name):
+    print(f"Hello, {name}!")
+
+greet("World")
 `,
   react: `import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';

@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { TemplateCard } from "@/components/TemplateCard";
-import { Code, Languages, TerminalSquare, Orbit, Box } from "lucide-react";
+import { Code, Languages, Orbit, Box, Globe } from "lucide-react";
 
 export default function Home() {
   return (
@@ -20,22 +20,16 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-8">Choose a Template</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             <TemplateCard
-              title="JavaScript"
-              description="A vanilla JS project ready for the browser."
-              href="/editor?template=js"
-              icon={<Languages className="w-10 h-10 text-primary" />}
+              title="Web Project"
+              description="A starter with HTML, CSS, and JavaScript."
+              href="/editor?template=web"
+              icon={<Globe className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="Python"
               description="Start with a simple Python script."
               href="/editor?template=python"
               icon={<Code className="w-10 h-10 text-primary" />}
-            />
-            <TemplateCard
-              title="HTML/CSS"
-              description="Create a static webpage from scratch."
-              href="/editor?template=html"
-              icon={<TerminalSquare className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="React"
