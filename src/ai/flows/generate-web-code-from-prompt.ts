@@ -16,7 +16,9 @@ const GenerateWebCodeInputSchema = z.object({
 export type GenerateWebCodeInput = z.infer<typeof GenerateWebCodeInputSchema>;
 
 const GenerateWebCodeOutputSchema = z.object({
-  html: z.string().describe('The complete, self-contained HTML document. This should be a single file including <html>, <head>, <body>, <style>, and <script> tags as needed.'),
+  html: z.string().describe('The complete HTML code for the <body> of the page. It should be self-contained and not include <html>, <head>, or <style> tags.'),
+  css: z.string().describe('The complete CSS code. It should be self-contained and not include <style> tags.'),
+  js: z.string().describe('The complete JavaScript code. It should be self-contained and not include <script> tags.'),
 });
 export type GenerateWebCodeOutput = z.infer<typeof GenerateWebCodeOutputSchema>;
 
@@ -28,13 +30,12 @@ const prompt = ai.definePrompt({
   name: 'generateWebCodePrompt',
   input: {schema: GenerateWebCodeInputSchema},
   output: {schema: GenerateWebCodeOutputSchema},
-  prompt: `You are an expert web developer. Based on the user's prompt, generate a single, complete, self-contained HTML file.
+  prompt: `You are an expert web developer. Based on the user's prompt, generate three separate code blocks for HTML, CSS, and JavaScript.
 
-  Provide the **full and complete code** for the HTML document.
-  - The response must be a valid HTML file.
-  - It MUST include all necessary HTML tags like <html>, <head>, and <body>.
-  - All CSS MUST be included inside a <style> tag within the <head>.
-  - All JavaScript MUST be included inside a <script> tag, preferably at the end of the <body>.
+  Provide the **full and complete code** for each language.
+  - The HTML should only be the content for the <body> tag.
+  - The CSS should be complete.
+  - The JavaScript should be complete and manipulate the HTML.
 
   Prompt: {{{prompt}}}`,
 });

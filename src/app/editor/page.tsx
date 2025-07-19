@@ -24,9 +24,12 @@ function EditorView() {
   const [terminalOutput, setTerminalOutput] = useState('');
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  // Web editor state (now just a single HTML file)
+  // Web editor state
   const [html, setHtml] = useState(templates.web.html);
-  
+  const [css, setCss] = useState(templates.web.css);
+  const [js, setJs] = useState(templates.web.js);
+  const [activeWebLanguage, setActiveWebLanguage] = useState<WebLanguage>('html');
+
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
       const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
@@ -47,6 +50,8 @@ function EditorView() {
       }
     } else if (template === 'web') {
       setHtml(templates.web.html);
+      setCss(templates.web.css);
+      setJs(templates.web.js);
     } else {
       setCode(templates.react);
       setLanguage('javascript');
@@ -66,12 +71,29 @@ function EditorView() {
     setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
   };
   
-  const handleAIPanelCodeChange = (newCode: string | {html: string}, targetLanguage?: 'html' | 'javascript' | 'python') => {
+  const handleWebEditorCodeChange = (newCode: string, language: 'html' | 'css' | 'js') => {
+    if (language === 'html') setHtml(newCode);
+    if (language === 'css') setCss(newCode);
+    if (language === 'js') setJs(newCode);
+  };
+  
+  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}, targetLanguage?: 'html' | 'javascript' | 'python') => {
       if(template === 'web' && typeof newCode === 'object' && 'html' in newCode) {
         setHtml(newCode.html);
+        setCss(newCode.css);
+        setJs(newCode.js);
       } else if (typeof newCode === 'string') {
         setCode(newCode);
       }
+  }
+
+  const getActiveWebEditorCode = () => {
+    switch(activeWebLanguage) {
+      case 'html': return html;
+      case 'css': return css;
+      case 'js': return js;
+      default: return '';
+    }
   }
 
   if (template === 'web') {
@@ -83,18 +105,21 @@ function EditorView() {
             <SidebarInset>
               <main className="flex-grow p-2 overflow-hidden">
                   <WebEditor 
-                    setEditorCode={setHtml}
+                    setEditorCode={handleWebEditorCodeChange}
                     html={html}
+                    css={css}
+                    js={js}
+                    onTabChange={setActiveWebLanguage}
                   />
               </main>
             </SidebarInset>
              <Sidebar side="right" collapsible="icon">
               <SidebarContent className="p-0">
                  <AIPanel
-                    editorCode={html}
+                    editorCode={getActiveWebEditorCode()}
                     setEditorCode={handleAIPanelCodeChange}
                     getSelectedText={() => ""} // TODO: Implement for multi-file editor
-                    activeWebLanguage={'html'}
+                    activeWebLanguage={activeWebLanguage}
                   />
               </SidebarContent>
             </Sidebar>

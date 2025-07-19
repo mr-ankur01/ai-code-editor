@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type Language = 'html' | 'css' | 'js' | 'javascript' | 'python';
 
 interface CodeGenerationProps {
-  setEditorCode: (code: string | {html: string}, language?: Language) => void;
+  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: Language) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
 }
 
@@ -35,7 +35,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
     try {
       if(activeWebLanguage) {
         const result = await generateWebCode({ prompt });
-        setEditorCode(result, 'html');
+        setEditorCode(result);
       } else {
         const result = await generateCode({ prompt, language });
         setEditorCode(result.code, language);
