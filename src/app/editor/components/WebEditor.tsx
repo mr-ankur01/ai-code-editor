@@ -20,13 +20,15 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
   const [refreshKey, setRefreshKey] = useState(0);
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState('light');
+  const [sandboxedHtml, setSandboxedHtml] = useState('');
 
   useEffect(() => {
     setEditorTheme(resolvedTheme === 'dark' ? 'vs-dark' : 'light');
   }, [resolvedTheme]);
 
-  const sandboxedHtml = useMemo(() => {
-    // Create a temporary DOM to parse the user's HTML
+  useEffect(() => {
+    // DOMParser is only available in the browser.
+    // We run this in useEffect to avoid SSR errors.
     const doc = new DOMParser().parseFromString(html, 'text/html');
     
     // Inject CSS into the head
@@ -45,7 +47,7 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
     if (!doc.head) doc.documentElement.prepend(head);
     if (!doc.body) doc.documentElement.appendChild(body);
 
-    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
+    setSandboxedHtml(`<!DOCTYPE html>${doc.documentElement.outerHTML}`);
   }, [html, css, js]);
   
   const handleRefresh = () => {
