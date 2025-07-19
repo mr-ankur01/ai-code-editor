@@ -77,7 +77,7 @@ function EditorView() {
     if (language === 'js') setJs(newCode);
   };
   
-  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}, targetLanguage?: 'html' | 'javascript' | 'python') => {
+  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}) => {
       if(template === 'web' && typeof newCode === 'object' && 'html' in newCode) {
         setHtml(newCode.html);
         setCss(newCode.css);

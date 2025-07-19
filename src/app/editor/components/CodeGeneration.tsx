@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { generateCode } from '@/ai/flows/generate-code-from-prompt';
@@ -7,19 +7,15 @@ import { generateWebCode } from '@/ai/flows/generate-web-code-from-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Loader } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-type Language = 'html' | 'css' | 'js' | 'javascript' | 'python';
 
 interface CodeGenerationProps {
-  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: Language) => void;
+  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: string) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
 }
 
 export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerationProps) {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState<Language>('javascript');
   const { toast } = useToast();
 
   const handleGenerateCode = async () => {
@@ -37,8 +33,8 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
         const result = await generateWebCode({ prompt });
         setEditorCode(result);
       } else {
-        const result = await generateCode({ prompt, language });
-        setEditorCode(result.code, language);
+        const result = await generateCode({ prompt });
+        setEditorCode(result.code);
       }
       toast({
         title: 'Code Generated',
@@ -69,21 +65,6 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage }: CodeGenerat
           className="flex-grow resize-none"
           disabled={isLoading}
         />
-        {!activeWebLanguage && (
-           <Select 
-             value={language} 
-             onValueChange={(value) => setLanguage(value as Language)}
-             disabled={isLoading}
-           >
-            <SelectTrigger>
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="javascript">JavaScript</SelectItem>
-              <SelectItem value="python">Python</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
         <Button onClick={handleGenerateCode} disabled={isLoading}>
           {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
           Generate Code
