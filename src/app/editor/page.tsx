@@ -180,6 +180,9 @@ function EditorView() {
     setTerminalOutput(`> Running ${fileName}...\n`);
 
     try {
+      // This function call is structured like an API call.
+      // In a real application, you would replace this with a call to your backend service.
+      // For example: `const result = await fetch('/api/execute', { method: 'POST', body: JSON.stringify({ code, language }) })`
       const result = await simulateCodeExecution({ code, language });
       setTerminalOutput(prev => prev + result.output);
     } catch (error) {

@@ -25,13 +25,16 @@ function HeaderContent({ showBack, showSidebarToggle }: HeaderProps) {
             </Button>
           )}
           <Link href="/" className="text-xl font-bold font-headline hover:text-primary transition-colors">
-            Codex
+            GenEdit
           </Link>
         </div>
         <div className="flex items-center gap-4">
           {showSidebarToggle && sidebar && (
-            <SidebarTrigger>
-              {sidebar.open ? <PanelRight /> : <PanelLeft />}
+            <SidebarTrigger asChild>
+              <Button variant="ghost" size="icon">
+                {sidebar.open ? <PanelRight /> : <PanelLeft />}
+                <span className="sr-only">Toggle Sidebar</span>
+              </Button>
             </SidebarTrigger>
           )}
           <ThemeToggle />
