@@ -7,6 +7,8 @@ import { AIPanel } from './components/AIPanel';
 import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Play } from 'lucide-react';
 
 function EditorView() {
   const searchParams = useSearchParams();
@@ -46,6 +48,10 @@ function EditorView() {
     }
     return '';
   };
+  
+  const handleRunCode = () => {
+    setTerminalOutput(`Running ${language} code...\n\n(Note: This is a simulated execution environment.)`);
+  };
 
   return (
     <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
@@ -53,12 +59,20 @@ function EditorView() {
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-2 p-2 overflow-hidden">
         {/* Left Column */}
         <div className="flex flex-col gap-2 overflow-hidden">
-          <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden">
+          <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-2 border-b">
+               <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                 {language}
+               </div>
+               <Button size="sm" onClick={handleRunCode}>
+                  <Play className="w-4 h-4 mr-2" />
+                  Run
+               </Button>
+            </div>
             <Editor
               ref={editorRef}
               code={code}
               setCode={setCode}
-              language={language}
             />
           </div>
           <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">

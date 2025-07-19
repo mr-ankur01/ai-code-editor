@@ -4,13 +4,12 @@ import { Textarea } from '@/components/ui/textarea';
 interface EditorProps {
   code: string;
   setCode: (code: string) => void;
-  language: string;
 }
 
 export const Editor = forwardRef<HTMLTextAreaElement, EditorProps>(
-  ({ code, setCode, language }, ref) => {
+  ({ code, setCode }, ref) => {
     return (
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative flex-grow">
         <Textarea
           ref={ref}
           value={code}
@@ -21,9 +20,6 @@ export const Editor = forwardRef<HTMLTextAreaElement, EditorProps>(
           autoCorrect="off"
           autoCapitalize="off"
         />
-        <div className="absolute top-2 right-4 text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-          {language}
-        </div>
       </div>
     );
   }
