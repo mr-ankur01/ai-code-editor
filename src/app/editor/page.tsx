@@ -164,7 +164,7 @@ function EditorView() {
             <SidebarContent className="p-0">
                <AIPanel
                   editorCode={code}
-                  setEditorCode={setCode}
+                  setEditorCode={handleAIPanelCodeChange}
                   getSelectedText={getSelectedText}
                 />
             </SidebarContent>
