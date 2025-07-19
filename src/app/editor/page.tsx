@@ -1,3 +1,4 @@
+
 'use client';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -143,7 +144,7 @@ function EditorView() {
 
     setIsExecuting(true);
     const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
-    setTerminalOutput(`> Running ${fileName} via API...\n`);
+    setTerminalOutput(`> Running ${fileName}...\n`);
 
     try {
       // This is where you would call a real code execution API.
