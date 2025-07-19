@@ -58,11 +58,9 @@ function EditorView() {
     <SidebarProvider>
       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
         <Header showBack={true}>
-          <SidebarTrigger asChild>
-             <Button variant="ghost" size="icon">
-                <PanelRight />
-                <span className="sr-only">Toggle AI Panel</span>
-             </Button>
+          <SidebarTrigger>
+            <PanelRight />
+            <span className="sr-only">Toggle AI Panel</span>
           </SidebarTrigger>
         </Header>
         <div className="flex flex-grow overflow-hidden">
