@@ -1,5 +1,5 @@
 'use client';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Editor } from './components/Editor';
@@ -8,9 +8,10 @@ import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play } from 'lucide-react';
+import { Play, Monitor, RefreshCw } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 import { WebEditor } from './components/WebEditor';
+import { Sandbox } from './components/Sandbox';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -29,6 +30,9 @@ function EditorView() {
   const [css, setCss] = useState(templates.web.css);
   const [js, setJs] = useState(templates.web.js);
   const [activeWebLanguage, setActiveWebLanguage] = useState<WebLanguage>('html');
+
+  // Sandbox state
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
@@ -57,7 +61,9 @@ function EditorView() {
             setLanguage('csharp');
             break;
       }
-      setTerminalOutput(`> Running ${template}...\n(Execution is simulated)`);
+      if (template !== 'react') {
+        setTerminalOutput(`> Running ${template}...\n(Execution is simulated)`);
+      }
 
     } else if (template === 'web') {
       setHtml(templates.web.html);
@@ -66,9 +72,50 @@ function EditorView() {
     } else {
       setCode(templates.react);
       setLanguage('javascript');
-      setTerminalOutput(`> Running react...\n(Execution is simulated)`);
     }
   }, [template]);
+
+  const sandboxedReactHtml = useMemo(() => {
+    if (template !== 'react') return '';
+    const reactVersion = '18.3.1';
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>React Preview</title>
+          <style>
+            body { font-family: sans-serif; }
+            #root { padding: 1rem; }
+            button {
+                background-color: hsl(var(--primary));
+                color: hsl(var(--primary-foreground));
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 0.5rem;
+                cursor: pointer;
+            }
+            button:hover {
+                opacity: 0.9;
+            }
+          </style>
+          <script src="https://unpkg.com/react@${reactVersion}/umd/react.development.js" crossorigin></script>
+          <script src="https://unpkg.com/react-dom@${reactVersion}/umd/react-dom.development.js" crossorigin></script>
+          <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="text/babel" data-type="module">
+            try {
+              ${code}
+            } catch (error) {
+              const root = document.getElementById('root');
+              root.innerHTML = '<pre style="color: red;">' + error + '</pre>';
+            }
+          </script>
+        </body>
+      </html>
+    `;
+  }, [code, template]);
 
   const getSelectedText = () => {
     if (editorRef.current) {
@@ -80,7 +127,11 @@ function EditorView() {
   };
   
   const handleRunCode = () => {
-    setTerminalOutput(`> Running ${language} code...\n(Execution is simulated)`);
+    if (template === 'react') {
+      setRefreshKey(prev => prev + 1);
+    } else {
+      setTerminalOutput(`> Running ${language} code...\n(Execution is simulated)`);
+    }
   };
   
   const handleWebEditorCodeChange = (newCode: string, language: 'html' | 'css' | 'js') => {
@@ -151,11 +202,11 @@ function EditorView() {
               <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between p-2 border-b">
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                    {language}
+                    {template === 'react' ? 'React.js' : language}
                   </div>
                   <Button size="sm" onClick={handleRunCode}>
-                      <Play className="w-4 h-4 mr-2" />
-                      Run
+                      {template === 'react' ? <RefreshCw className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+                      {template === 'react' ? 'Refresh' : 'Run'}
                   </Button>
                 </div>
                 <div className="relative flex-grow flex">
@@ -167,7 +218,25 @@ function EditorView() {
                 </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-                <OutputTabs terminalOutput={terminalOutput} />
+                {template === 'react' ? (
+                  <div className="flex flex-col h-full">
+                    <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                      <div className="flex items-center">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                        <RefreshCw className="w-4 h-4" />
+                        <span className="sr-only">Refresh</span>
+                      </Button>
+                    </div>
+                    <div className="flex-grow">
+                      <Sandbox key={refreshKey} content={sandboxedReactHtml} />
+                    </div>
+                  </div>
+                ) : (
+                  <OutputTabs terminalOutput={terminalOutput} />
+                )}
               </div>
             </main>
           </SidebarInset>
