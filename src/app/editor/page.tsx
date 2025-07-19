@@ -44,6 +44,18 @@ function EditorView() {
         case 'vue':
             setLanguage('html');
             break;
+        case 'javascript':
+            setLanguage('javascript');
+            break;
+        case 'java':
+            setLanguage('java');
+            break;
+        case 'go':
+            setLanguage('go');
+            break;
+        case 'csharp':
+            setLanguage('csharp');
+            break;
       }
       setTerminalOutput(`> Running ${template}...\n(Execution is simulated)`);
 

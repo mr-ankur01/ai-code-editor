@@ -109,4 +109,43 @@ root.render(<App />);
   }).mount('#app')
 </script>
 `,
+  javascript: `// Welcome to Codex!
+// Try asking the AI to 'create a function to sort an array'.
+
+function greet(name) {
+  console.log(\`Hello, \${name}!\`);
+}
+
+greet("World");
+`,
+  java: `// Welcome to Codex!
+// Try asking the AI to 'write a method to find the largest number in an array'.
+
+class Main {
+  public static void main(String[] args) {
+    System.out.println("Hello, World!");
+  }
+}`,
+  go: `// Welcome to Codex!
+// Try asking the AI to 'write a function that returns a slice of strings'.
+
+package main
+
+import "fmt"
+
+func main() {
+  fmt.Println("Hello, World!")
+}`,
+  csharp: `// Welcome to Codex!
+// Try asking the AI to 'create a Person class with Name and Age properties'.
+
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Hello, World!");
+    }
+}`,
 };
