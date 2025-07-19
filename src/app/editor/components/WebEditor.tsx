@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Sandbox } from './Sandbox';
-import { templates } from '@/lib/templates';
+import { Monitor } from 'lucide-react';
 
 type Language = 'html' | 'css' | 'js';
 
@@ -76,8 +76,14 @@ export function WebEditor({ setEditorCode, html, css, js, activeTab, onTabChange
           </div>
         </Tabs>
       </div>
-      <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
-         <Sandbox content={webContent} />
+      <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
+        <div className="flex h-10 items-center justify-start px-3 border-b bg-muted/50">
+            <Monitor className="w-4 h-4 mr-2" />
+            <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+        </div>
+        <div className="flex-grow">
+            <Sandbox content={webContent} />
+        </div>
       </div>
     </div>
   );
