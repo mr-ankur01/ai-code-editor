@@ -8,8 +8,8 @@ export default function Home() {
       <Header />
       <main className="flex-grow flex flex-col items-center justify-center p-8 text-center">
         <div className="max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-bold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            CodeX
+          <h1 className="text-5xl md:text-7xl font-bold font-headline tracking-tighter">
+            GenEdit
           </h1>
           <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Your AI-powered coding companion. Generate, explain, and chat your way through code with seamless AI integration.
