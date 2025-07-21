@@ -90,27 +90,6 @@ function EditorView() {
     }
   }, [template]);
 
-  const themeStyles = `
-      body { 
-        font-family: sans-serif; 
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
-        transition: background-color 0.2s, color 0.2s;
-      }
-      #root { padding: 1rem; }
-      button {
-        background-color: hsl(var(--primary));
-        color: hsl(var(--primary-foreground));
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-      }
-      button:hover {
-        opacity: 0.9;
-      }
-    `;
-
   const sandboxedWebHtml = useMemo(() => {
     if (!isMounted) return '';
     return `
@@ -118,7 +97,24 @@ function EditorView() {
       <html class="${resolvedTheme}">
         <head>
           <style>
-            ${themeStyles}
+            body { 
+              font-family: sans-serif; 
+              background-color: hsl(var(--background));
+              color: hsl(var(--foreground));
+              transition: background-color 0.2s, color 0.2s;
+            }
+            #root { padding: 1rem; }
+            button {
+              background-color: hsl(var(--primary));
+              color: hsl(var(--primary-foreground));
+              padding: 0.5rem 1rem;
+              border: none;
+              border-radius: 0.5rem;
+              cursor: pointer;
+            }
+            button:hover {
+              opacity: 0.9;
+            }
             ${css}
           </style>
         </head>
@@ -128,7 +124,7 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [html, css, js, resolvedTheme, themeStyles, isMounted]);
+  }, [html, css, js, resolvedTheme, isMounted]);
 
 
   const getSelectedText = () => {
@@ -290,11 +286,16 @@ function EditorView() {
                         files={{
                           '/App.js': code,
                           '/styles.css': {
-                            code: `body {
-                              background-color: hsl(var(--background));
-                              color: hsl(var(--foreground));
-                              font-family: sans-serif;
-                            }`,
+                            code: `
+                              @tailwind base;
+                              @tailwind components;
+                              @tailwind utilities;
+                              body {
+                                background-color: hsl(var(--background));
+                                color: hsl(var(--foreground));
+                                font-family: sans-serif;
+                              }
+                            `,
                             hidden: true,
                           }
                         }}
@@ -384,3 +385,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
