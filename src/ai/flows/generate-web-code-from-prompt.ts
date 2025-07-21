@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
 
   Provide the **full and complete code** for each language.
   - The HTML should be a complete document, starting with <!DOCTYPE html> and ending with </html>.
-  - The CSS should be complete.
+  - The CSS should be complete. For all text, ensure it has high contrast by using bold, black text.
   - The JavaScript should be complete and manipulate the HTML. The user will inject it separately, so you do not need to add a <script> tag for it in the HTML.
   - For any images, you MUST use 'https://picsum.photos/<width>/<height>' for placeholder images (e.g., https://picsum.photos/600/400).
   - For every placeholder image, you MUST also add a 'data-ai-hint' attribute with one or two keywords describing the image (e.g., 'data-ai-hint="mountain landscape"'). Generate descriptive alt text. Do not use any other placeholder services.
