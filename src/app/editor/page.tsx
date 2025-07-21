@@ -56,21 +56,27 @@ function EditorView() {
           setLanguage('python');
           break;
         case 'react':
+            setCode(templates.react);
             setLanguage('javascript');
             break;
         case 'vue':
+            setCode(templates.vue);
             setLanguage('html');
             break;
         case 'javascript':
+            setCode(templates.javascript);
             setLanguage('javascript');
             break;
         case 'java':
+            setCode(templates.java);
             setLanguage('java');
             break;
         case 'go':
+            setCode(templates.go);
             setLanguage('go');
             break;
         case 'csharp':
+            setCode(templates.csharp);
             setLanguage('csharp');
             break;
       }
@@ -276,37 +282,43 @@ function EditorView() {
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
                 {template === 'react' ? (
-                   <SandpackProvider
-                      key={refreshKey}
-                      template="react"
-                      theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                      files={{
-                        '/App.js': code,
-                        '/styles.css': {
-                          code: themeStyles,
-                          hidden: true,
-                        }
-                      }}
-                       options={{
-                        externalResources: ["https://cdn.tailwindcss.com"],
-                      }}
-                    >
-                      <div className="flex flex-col h-full">
-                        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                          <div className="flex items-center">
-                            <Monitor className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                   isMounted ? (
+                     <SandpackProvider
+                        key={refreshKey}
+                        template="react"
+                        theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                        files={{
+                          '/App.js': code,
+                          '/styles.css': {
+                            code: `body {
+                              background-color: hsl(var(--background));
+                              color: hsl(var(--foreground));
+                              font-family: sans-serif;
+                            }`,
+                            hidden: true,
+                          }
+                        }}
+                         options={{
+                          externalResources: ["https://cdn.tailwindcss.com"],
+                        }}
+                      >
+                        <div className="flex flex-col h-full">
+                          <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                            <div className="flex items-center">
+                              <Monitor className="w-4 h-4 mr-2" />
+                              <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                              <RefreshCw className="w-4 h-4" />
+                              <span className="sr-only">Refresh</span>
+                            </Button>
                           </div>
-                          <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                            <RefreshCw className="w-4 h-4" />
-                            <span className="sr-only">Refresh</span>
-                          </Button>
+                          <div className="flex-grow h-full">
+                            <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} />
+                          </div>
                         </div>
-                        <div className="flex-grow h-full">
-                          {isMounted ? <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} /> : <Skeleton className="w-full h-full" />}
-                        </div>
-                      </div>
-                   </SandpackProvider>
+                     </SandpackProvider>
+                   ) : <Skeleton className="w-full h-full" />
                 ) : template === 'vue' ? (
                   <div className="flex flex-col h-full">
                     <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
