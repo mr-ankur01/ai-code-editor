@@ -84,50 +84,6 @@ function EditorView() {
   }, [template]);
 
   const themeStyles = `
-      :root {
-        --background: 240 10% 98%;
-        --foreground: 222.2 84% 4.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 210 90% 55%; /* Muted Blue */
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 210 40% 9%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 210 40% 45.1%;
-        --accent: 210 90% 90%; /* Lighter Blue */
-        --accent-foreground: 210 90% 25%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 210 40% 89.8%;
-        --input: 210 40% 89.8%;
-        --ring: 210 90% 55%;
-      }
-    
-      .dark {
-        --background: 20 14% 6%;
-        --foreground: 20 5% 94%;
-        --card: 20 14% 6%;
-        --card-foreground: 20 5% 94%;
-        --popover: 20 14% 6%;
-        --popover-foreground: 20 5% 94%;
-        --primary: 210 90% 55%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 20 10% 15%;
-        --secondary-foreground: 20 5% 98%;
-        --muted: 20 10% 15%;
-        --muted-foreground: 20 5% 64%;
-        --accent: 210 90% 15%; /* Darker Blue */
-        --accent-foreground: 210 90% 85%;
-        --destructive: 0 72% 51%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 20 10% 15%;
-        --input: 20 10% 15%;
-        --ring: 210 90% 55%;
-      }
-
       body { 
         font-family: sans-serif; 
         background-color: hsl(var(--background));
