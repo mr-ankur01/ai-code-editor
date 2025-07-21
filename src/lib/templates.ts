@@ -5,7 +5,7 @@ export const templates = {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Codex Web Project</title>
+  <title>CodeX Web Project</title>
 </head>
 <body>
   <h1>Hello, Web!</h1>
@@ -57,7 +57,7 @@ button.addEventListener('click', () => {
   document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 });`,
   },
-  python: `# Welcome to Codex!
+  python: `# Welcome to CodeX!
 # Try asking the AI to 'create a class for a Dog with a bark method'.
 
 def greet(name):
@@ -109,7 +109,7 @@ root.render(<App />);
   }).mount('#app')
 </script>
 `,
-  javascript: `// Welcome to Codex!
+  javascript: `// Welcome to CodeX!
 // Try asking the AI to 'create a function to sort an array'.
 
 function greet(name) {
@@ -118,7 +118,7 @@ function greet(name) {
 
 greet("World");
 `,
-  java: `// Welcome to Codex!
+  java: `// Welcome to CodeX!
 // Try asking the AI to 'write a method to find the largest number in an array'.
 
 class Main {
@@ -126,7 +126,7 @@ class Main {
     System.out.println("Hello, World!");
   }
 }`,
-  go: `// Welcome to Codex!
+  go: `// Welcome to CodeX!
 // Try asking the AI to 'write a function that returns a slice of strings'.
 
 package main
@@ -136,7 +136,7 @@ import "fmt"
 func main() {
   fmt.Println("Hello, World!")
 }`,
-  csharp: `// Welcome to Codex!
+  csharp: `// Welcome to CodeX!
 // Try asking the AI to 'create a Person class with Name and Age properties'.
 
 using System;
