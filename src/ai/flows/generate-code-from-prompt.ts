@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'generateCodePrompt',
   input: {schema: GenerateCodeInputSchema},
   output: {schema: GenerateCodeOutputSchema},
-  prompt: `You are an expert software developer that specializes in generating code in {{language}}.
+  prompt: `You are an expert software developer{{#if language}} that specializes in generating code in {{language}}{{/if}}.
 
   Based on the prompt, generate the appropriate code.  Be as complete as possible, including imports, functions, classes, etc.
 
