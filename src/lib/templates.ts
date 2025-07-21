@@ -65,28 +65,24 @@ def greet(name):
 
 greet("World")
 `,
-  react: `import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
+  react: `import { useState } from 'react';
 
-// NOTE: This is a simulated React environment. 
-// For a full Next.js app, use a proper setup.
-
-function App() {
+export default function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div>
-      <h1>React Counter</h1>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
+    <div className="p-4">
+      <h1 className="text-xl font-bold">React Counter</h1>
+      <p className="mt-2">You clicked {count} times</p>
+      <button 
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        onClick={() => setCount(count + 1)}
+      >
         Click me
       </button>
     </div>
   );
 }
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
 `,
   vue: `<div id="app">
   <h1>{{ message }}</h1>

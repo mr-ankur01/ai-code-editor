@@ -16,6 +16,7 @@ import { Sandbox } from './components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
+import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -103,30 +104,6 @@ function EditorView() {
         opacity: 0.9;
       }
     `;
-
-  const sandboxedReactHtml = useMemo(() => {
-    if (template !== 'react' || !isMounted) return '';
-    const reactVersion = '18.3.1';
-    
-    return `
-      <!DOCTYPE html>
-      <html class="${resolvedTheme}">
-        <head>
-          <title>React Preview</title>
-          <style>${themeStyles}</style>
-          <script src="https://unpkg.com/react@${reactVersion}/umd/react.development.js" crossorigin></script>
-          <script src="https://unpkg.com/react-dom@${reactVersion}/umd/react.dom.development.js" crossorigin></script>
-          <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="text/babel" data-type="module">
-            ${code}
-          </script>
-        </body>
-      </html>
-    `;
-  }, [code, template, resolvedTheme, themeStyles, isMounted]);
 
   const sandboxedWebHtml = useMemo(() => {
     if (!isMounted) return '';
@@ -298,7 +275,39 @@ function EditorView() {
                 </div>
               </div>
               <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-                {template === 'react' || template === 'vue' ? (
+                {template === 'react' ? (
+                   <SandpackProvider
+                      key={refreshKey}
+                      template="react"
+                      theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                      files={{
+                        '/App.js': code,
+                        '/styles.css': {
+                          code: themeStyles,
+                          hidden: true,
+                        }
+                      }}
+                       options={{
+                        externalResources: ["https://cdn.tailwindcss.com"],
+                      }}
+                    >
+                      <div className="flex flex-col h-full">
+                        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                          <div className="flex items-center">
+                            <Monitor className="w-4 h-4 mr-2" />
+                            <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                            <RefreshCw className="w-4 h-4" />
+                            <span className="sr-only">Refresh</span>
+                          </Button>
+                        </div>
+                        <div className="flex-grow h-full">
+                          {isMounted ? <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} /> : <Skeleton className="w-full h-full" />}
+                        </div>
+                      </div>
+                   </SandpackProvider>
+                ) : template === 'vue' ? (
                   <div className="flex flex-col h-full">
                     <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
                       <div className="flex items-center">
@@ -311,7 +320,7 @@ function EditorView() {
                       </Button>
                     </div>
                     <div className="flex-grow">
-                      {isMounted ? <Sandbox key={refreshKey} content={sandboxedReactHtml} /> : <Skeleton className="w-full h-full" />}
+                      {isMounted ? <Sandbox key={refreshKey} content={code} /> : <Skeleton className="w-full h-full" />}
                     </div>
                   </div>
                 ) : (
