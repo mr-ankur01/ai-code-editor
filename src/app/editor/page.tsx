@@ -15,7 +15,6 @@ import { WebEditor } from './components/WebEditor';
 import { Sandbox } from './components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
-import { useTheme } from 'next-themes';
 import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 
 type WebLanguage = 'html' | 'css' | 'js';
@@ -24,7 +23,6 @@ function EditorView() {
   const searchParams = useSearchParams();
   const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
   const { toast } = useToast();
-  const { resolvedTheme } = useTheme();
   
   // Single file editor state
   const [code, setCode] = useState('');
@@ -94,19 +92,18 @@ function EditorView() {
     if (!isMounted) return '';
     return `
       <!DOCTYPE html>
-      <html class="${resolvedTheme}">
+      <html>
         <head>
           <style>
             body { 
               font-family: sans-serif; 
-              background-color: hsl(var(--background));
-              color: hsl(var(--foreground));
-              transition: background-color 0.2s, color 0.2s;
+              background-color: #ffffff;
+              color: #000000;
             }
             #root { padding: 1rem; }
             button {
-              background-color: hsl(var(--primary));
-              color: hsl(var(--primary-foreground));
+              background-color: #3b82f6; /* blue-500 */
+              color: #ffffff;
               padding: 0.5rem 1rem;
               border: none;
               border-radius: 0.5rem;
@@ -124,7 +121,7 @@ function EditorView() {
         </body>
       </html>
     `;
-  }, [html, css, js, resolvedTheme, isMounted]);
+  }, [html, css, js, isMounted]);
 
 
   const getSelectedText = () => {
@@ -282,7 +279,6 @@ function EditorView() {
                      <SandpackProvider
                         key={refreshKey}
                         template="react"
-                        theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                         files={{
                           '/App.js': code,
                           '/styles.css': {
@@ -291,8 +287,8 @@ function EditorView() {
                               @tailwind components;
                               @tailwind utilities;
                               body {
-                                background-color: hsl(var(--background));
-                                color: hsl(var(--foreground));
+                                background-color: #ffffff;
+                                color: #000000;
                                 font-family: sans-serif;
                               }
                             `,
@@ -385,5 +381,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
