@@ -165,12 +165,7 @@ function EditorView() {
         <body>
           <div id="root"></div>
           <script type="text/babel" data-type="module">
-            try {
-              ${code}
-            } catch (error) {
-              const root = document.getElementById('root');
-              root.innerHTML = '<pre style="color: red;">' + error + '</pre>';
-            }
+            ${code}
           </script>
         </body>
       </html>
@@ -412,5 +407,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
