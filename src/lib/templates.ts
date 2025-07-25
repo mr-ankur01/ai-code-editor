@@ -70,12 +70,22 @@ greet("World")
 export default function App() {
   const [count, setCount] = useState(0);
 
+  const buttonStyle = {
+    marginTop: '1rem',
+    padding: '0.5rem 1rem',
+    backgroundColor: '#3b82f6',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.5rem',
+    cursor: 'pointer'
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">React Counter</h1>
-      <p className="mt-2">You clicked {count} times</p>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>React Counter</h1>
+      <p style={{ marginTop: '0.5rem' }}>You clicked {count} times</p>
       <button 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        style={buttonStyle}
         onClick={() => setCount(count + 1)}
       >
         Click me

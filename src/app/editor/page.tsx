@@ -102,7 +102,7 @@ function EditorView() {
             }
             #root { padding: 1rem; }
             button {
-              background-color: #3b82f6; /* blue-500 */
+              background-color: #3b82f6;
               color: #ffffff;
               padding: 0.5rem 1rem;
               border: none;
@@ -281,22 +281,6 @@ function EditorView() {
                         template="react"
                         files={{
                           '/App.js': code,
-                          '/styles.css': {
-                            code: `
-                              @tailwind base;
-                              @tailwind components;
-                              @tailwind utilities;
-                              body {
-                                background-color: #ffffff;
-                                color: #000000;
-                                font-family: sans-serif;
-                              }
-                            `,
-                            hidden: true,
-                          }
-                        }}
-                         options={{
-                          externalResources: ["https://cdn.tailwindcss.com"],
                         }}
                       >
                         <div className="flex flex-col h-full">
