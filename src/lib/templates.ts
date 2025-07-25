@@ -8,9 +8,7 @@ export const templates = {
   <title>CodeX Web Project</title>
 </head>
 <body>
-  <h1>Hello, Web!</h1>
-  <p>This is your sandboxed environment for HTML, CSS, and JavaScript.</p>
-  <button id="action-btn">Click Me!</button>
+  <div id="root"></div>
 </body>
 </html>`,
     css: `body { 
@@ -45,8 +43,14 @@ button {
 button:hover {
   background-color: #0056b3;
 }`,
-    js: `const button = document.getElementById('action-btn');
-const heading = document.querySelector('h1');
+    js: `const button = document.createElement('button');
+button.textContent = 'Click Me!';
+document.getElementById('root').appendChild(button);
+
+const heading = document.createElement('h1');
+heading.textContent = 'Hello, Web!';
+document.getElementById('root').prepend(heading);
+
 const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5', '#fff3e0'];
 
 let clickCount = 0;
@@ -70,24 +74,11 @@ greet("World")
 export default function App() {
   const [count, setCount] = useState(0);
 
-  const buttonStyle = {
-    marginTop: '1rem',
-    padding: '0.5rem 1rem',
-    backgroundColor: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '0.5rem',
-    cursor: 'pointer'
-  };
-
   return (
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>React Counter</h1>
-      <p style={{ marginTop: '0.5rem' }}>You clicked {count} times</p>
-      <button 
-        style={buttonStyle}
-        onClick={() => setCount(count + 1)}
-      >
+      <h1>React Counter</h1>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
         Click me
       </button>
     </div>
