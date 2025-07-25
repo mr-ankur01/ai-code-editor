@@ -9,7 +9,7 @@ import { OutputTabs } from './components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play, Monitor, RefreshCw, Loader } from 'lucide-react';
+import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 import { WebEditor } from './components/WebEditor';
 import { Sandbox } from './components/Sandbox';
@@ -169,6 +169,38 @@ function EditorView() {
       setIsExecuting(false);
     }
   };
+
+  const handleDownloadCode = () => {
+    let content = '';
+    let filename = 'code.txt';
+
+    if (template === 'web') {
+        content = getActiveWebEditorCode();
+        filename = `index.${activeWebLanguage}`;
+    } else {
+        content = code;
+        const extension = {
+            python: 'py',
+            react: 'jsx',
+            vue: 'html',
+            javascript: 'js',
+            java: 'java',
+            go: 'go',
+            csharp: 'cs'
+        }[template || ''] || 'txt';
+        filename = `${template || 'code'}.${extension}`;
+    }
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
   
   const handleWebEditorCodeChange = (newCode: string, language: 'html' | 'css' | 'js') => {
     if (language === 'html') setHtml(newCode);
@@ -216,6 +248,15 @@ root.render(
             <SidebarInset>
               <main className="flex-grow p-2 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
                   <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
+                     <div className="flex items-center justify-between p-2 border-b">
+                        <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                           Web Project
+                        </div>
+                        <Button size="sm" onClick={handleDownloadCode}>
+                           <Download className="w-4 h-4 mr-2" />
+                           Download
+                        </Button>
+                     </div>
                     <WebEditor 
                       setEditorCode={handleWebEditorCodeChange}
                       html={html}
@@ -269,10 +310,16 @@ root.render(
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                     {template === 'react' ? 'React.js' : language}
                   </div>
-                   <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
-                      {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
-                      Run
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" onClick={handleDownloadCode}>
+                       <Download className="w-4 h-4 mr-2" />
+                       Download
                     </Button>
+                    <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
+                       {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
+                       Run
+                     </Button>
+                  </div>
                 </div>
                 <div className="relative flex-1">
                   <div className="absolute inset-0">

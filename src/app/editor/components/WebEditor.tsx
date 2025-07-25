@@ -35,7 +35,7 @@ export function WebEditor({ setEditorCode, html, css, js, onTabChange }: WebEdit
 
   return (
       <Tabs defaultValue="html" className="w-full h-full flex flex-col" onValueChange={(value) => onTabChange(value as 'html' | 'css' | 'js')}>
-        <TabsList className="shrink-0 w-full justify-start rounded-none border-b">
+        <TabsList className="shrink-0 w-full justify-start rounded-none border-b -mt-2">
           <TabsTrigger value="html" className="rounded-none">HTML</TabsTrigger>
           <TabsTrigger value="css" className="rounded-none">CSS</TabsTrigger>
           <TabsTrigger value="js" className="rounded-none">JavaScript</TabsTrigger>
