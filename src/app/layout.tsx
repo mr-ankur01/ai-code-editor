@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
-  title: 'GenEdit',
+  title: 'CodeX',
   description: 'An AI-powered code editor',
 };
 

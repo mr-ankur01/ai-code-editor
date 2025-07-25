@@ -41,7 +41,7 @@ export function Header({ showBack = false, showSidebarToggle = false }: HeaderPr
             </Button>
           )}
           <Link href="/" className="text-xl font-bold font-headline hover:text-primary transition-colors">
-            GenEdit
+            CodeX
           </Link>
         </div>
         <div className="flex items-center gap-4">
