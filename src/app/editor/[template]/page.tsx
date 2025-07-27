@@ -80,34 +80,34 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
   const sandboxedWebHtml = useMemo(() => {
     if (!isMounted) return '';
+    // We construct a full HTML document here to ensure proper rendering in the sandbox.
+    // The CSS is injected into a <style> tag and the JS into a <script> tag.
     return `
       <!DOCTYPE html>
-      <html>
+      <html lang="en">
         <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
+            /* Default styles to ensure visibility of content */
             body { 
               font-family: sans-serif;
               background-color: #ffffff;
               color: #000000;
             }
             #root { padding: 1rem; }
-            button {
-              background-color: #3b82f6;
-              color: #ffffff;
-              padding: 0.5rem 1rem;
-              border: none;
-              border-radius: 0.5rem;
-              cursor: pointer;
-            }
-            button:hover {
-              opacity: 0.9;
-            }
             ${css}
           </style>
         </head>
         <body>
           ${html}
-          <script>${js}</script>
+          <script>
+            try {
+              ${js}
+            } catch (e) {
+              document.body.innerHTML = '<pre style="color: red;">' + e + '</pre>';
+            }
+          </script>
         </body>
       </html>
     `;
