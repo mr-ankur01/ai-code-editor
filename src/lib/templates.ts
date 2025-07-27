@@ -47,13 +47,15 @@ button {
 button:hover {
   background-color: #0056b3;
 }`,
-    js: `const button = document.createElement('button');
-button.textContent = 'Click Me!';
-document.getElementById('root').appendChild(button);
+    js: `const root = document.getElementById('root');
 
 const heading = document.createElement('h1');
 heading.textContent = 'Hello, Web!';
-document.getElementById('root').prepend(heading);
+root.prepend(heading);
+
+const button = document.createElement('button');
+button.textContent = 'Click Me!';
+root.appendChild(button);
 
 const colors = ['#e0f7fa', '#e8eaf6', '#fce4ec', '#f3e5f5', '#fff3e0'];
 
