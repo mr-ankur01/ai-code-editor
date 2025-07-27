@@ -18,14 +18,13 @@ export function CodeExplanation({ editorCode, getSelectedText }: CodeExplanation
   const { toast } = useToast();
 
   const handleExplainCode = async () => {
-    const selectedCode = getSelectedText();
-    const codeToExplain = selectedCode.trim() || editorCode.trim();
+    const codeToExplain = editorCode.trim();
 
     if (!codeToExplain) {
       toast({
         variant: 'destructive',
         title: 'No code found',
-        description: 'Please select some code or write code in the editor to explain.',
+        description: 'Please write some code in the editor to explain.',
       });
       return;
     }
@@ -51,12 +50,12 @@ export function CodeExplanation({ editorCode, getSelectedText }: CodeExplanation
     <Card className="h-full flex flex-col border-0 shadow-none">
       <CardHeader className="pb-4">
         <CardTitle>Code Explanation</CardTitle>
-        <CardDescription>Select code in the editor or explain the whole file.</CardDescription>
+        <CardDescription>Get a summary of the entire code file.</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4">
         <Button onClick={handleExplainCode} disabled={isLoading}>
           {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-          Explain Code
+          Explain File
         </Button>
         <ScrollArea className="flex-grow rounded-md border p-4 bg-muted/50">
           {isLoading && <p className="text-muted-foreground animate-pulse">Analyzing code...</p>}

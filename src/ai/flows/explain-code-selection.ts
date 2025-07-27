@@ -39,14 +39,15 @@ const prompt = ai.definePrompt({
   name: 'explainCodeSelectionPrompt',
   input: {schema: ExplainCodeSelectionInputSchema},
   output: {schema: ExplainCodeSelectionOutputSchema},
-  prompt: `You are an AI code assistant. Summarize the following code block in clear, concise points. Each point should highlight a key aspect of the code's functionality, structure, or purpose.
+  prompt: `You are an AI code assistant. Explain the purpose of the entire code file provided below.
+Summarize the file in a few short, clear, and concise bullet points.
 
 Code:
 \`\`\`
 {{{code}}}
 \`\`\`
 
-Summary Points:`,
+Explanation Points:`,
 });
 
 const explainCodeSelectionFlow = ai.defineFlow(
