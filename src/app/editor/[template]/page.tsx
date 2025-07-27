@@ -56,10 +56,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             setCode(templates.react);
             setLanguage('javascript');
             break;
-        case 'vue':
-            setCode(templates.vue);
-            setLanguage('vue');
-            break;
         case 'javascript':
             setCode(templates.javascript);
             setLanguage('javascript');
@@ -122,92 +118,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     `;
   }, [html, css, js, isMounted]);
 
-  const sandboxedVueHtml = useMemo(() => {
-    if (!isMounted) return '';
-
-    const componentMatch = code.match(/<script>([\s\S]*)<\/script>/);
-    const templateMatch = code.match(/<template>([\s\S]*)<\/template>/);
-    
-    let vueScript = '';
-    let vueTemplate = `<h1>Hello Vue!</h1><p>Start by generating a component.</p>`;
-
-    if (componentMatch && componentMatch[1]) {
-        vueScript = componentMatch[1].trim();
-    } else {
-        vueScript = `export default { data() { return { message: 'Hello Vue!' } } }`;
-    }
-
-    if (templateMatch && templateMatch[1]) {
-        vueTemplate = templateMatch[1];
-    } else if (!componentMatch) {
-        vueTemplate = code;
-    } else if (code.includes('<template>')) {
-        const fullTemplate = code.match(/<template>([\s\S]*)<\/template>/);
-        if(fullTemplate && fullTemplate[1]) {
-            vueTemplate = fullTemplate[1];
-        }
-    }
-    
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <script src="https://unpkg.com/vue@3"><\/script>
-          <style>
-             body { 
-              font-family: sans-serif;
-              background-color: #ffffff;
-              color: #000000;
-              display: grid;
-              place-content: center;
-              min-height: 100vh;
-              margin: 0;
-            }
-            #app { padding: 1rem; }
-            button {
-              background-color: #42b883;
-              color: #ffffff;
-              padding: 0.5rem 1rem;
-              border: none;
-              border-radius: 0.5rem;
-              cursor: pointer;
-            }
-            button:hover {
-              opacity: 0.9;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="app"></div>
-          <script>
-            try {
-              const vueScript = \`${vueScript.replace(/`/g, '\\`')}\`;
-              const vueTemplate = \`${vueTemplate.replace(/`/g, '\\`')}\`;
-
-              const component = {
-                template: vueTemplate,
-                ...(() => {
-                  try {
-                    return new Function(\`return \${/export\\s+default\\s+/.test(vueScript) ? vueScript.replace('export default', '') : vueScript}\`)();
-                  } catch(e) {
-                    console.error('Failed to parse script with Function constructor:', e);
-                    // Fallback for simple data objects if the above fails
-                    return eval('(' + vueScript + ')');
-                  }
-                })()
-              };
-              Vue.createApp(component).mount('#app');
-            } catch (e) {
-              document.getElementById('app').innerText = 'Error mounting Vue component: ' + e.message;
-              console.error('Vue mounting error:', e);
-            }
-          <\/script>
-        </body>
-      </html>
-    `;
-  }, [code, isMounted]);
-
-
   const getSelectedText = () => {
     if (editorRef.current) {
       const model = editorRef.current.getModel();
@@ -221,7 +131,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   };
   
   const handleRunCode = async () => {
-    if (template === 'react' || template === 'web' || template === 'vue') {
+    if (template === 'react' || template === 'web') {
       setRefreshKey(prev => prev + 1);
       return;
     }
@@ -266,7 +176,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         const extension = {
             python: 'py',
             react: 'jsx',
-            vue: 'vue',
             javascript: 'js',
             java: 'java',
             go: 'go',
@@ -328,7 +237,7 @@ root.render(
       <SidebarProvider>
           <SidebarInset>
             <Header showBack={true} showSidebarToggle={true} />
-            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)]">
+            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
                 <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full p-2">
                   <div className="flex items-center justify-between p-2 border-b">
                       <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
@@ -386,7 +295,7 @@ root.render(
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                  {template === 'react' ? 'React.js' : template === 'vue' ? 'Vue.js' : language}
+                  {template === 'react' ? 'React.js' : language}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
@@ -405,7 +314,7 @@ root.render(
                     ref={editorRef}
                     code={code}
                     setCode={setCode}
-                    language={template === 'vue' ? 'vue' : language}
+                    language={language}
                   />
                 </div>
               </div>
@@ -441,22 +350,6 @@ root.render(
                       </div>
                   </SandpackProvider>
                 ) : <Skeleton className="w-full h-full" />
-              ) : template === 'vue' ? (
-                <div className="flex flex-col h-full">
-                  <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                    <div className="flex items-center">
-                      <Monitor className="w-4 h-4 mr-2" />
-                      <span className="text-sm font-medium text-muted-foreground">Web Output</span>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                      <RefreshCw className="w-4 h-4" />
-                      <span className="sr-only">Refresh</span>
-                    </Button>
-                  </div>
-                  <div className="flex-grow">
-                    {isMounted ? <Sandbox key={refreshKey} content={sandboxedVueHtml} /> : <Skeleton className="w-full h-full" />}
-                  </div>
-                </div>
               ) : (
                 <OutputTabs terminalOutput={terminalOutput} />
               )}

@@ -44,12 +44,6 @@ export default function Home() {
               icon={<Orbit className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
-              title="Vue.js"
-              description="Get started with a simple Vue app."
-              href="/editor/vue"
-              icon={<Box className="w-10 h-10 text-primary" />}
-            />
-            <TemplateCard
               title="Java"
               description="A simple 'Hello, World!' in Java."
               href="/editor/java"

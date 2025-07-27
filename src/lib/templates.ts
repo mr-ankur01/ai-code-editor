@@ -85,27 +85,6 @@ export default function App() {
   );
 }
 `,
-  vue: `<div id="app">
-  <h1>{{ message }}</h1>
-  <button @click="reverseMessage">Reverse Message</button>
-</div>
-
-<script src="https://unpkg.com/vue@3"></script>
-<script>
-  Vue.createApp({
-    data() {
-      return {
-        message: 'Hello Vue!'
-      }
-    },
-    methods: {
-      reverseMessage() {
-        this.message = this.message.split('').reverse().join('')
-      }
-    }
-  }).mount('#app')
-</script>
-`,
   javascript: `// Welcome to CodeX!
 // Try asking the AI to 'create a function to sort an array'.
 
