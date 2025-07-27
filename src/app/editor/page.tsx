@@ -252,9 +252,9 @@ root.render(
                         <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                            Web Project
                         </div>
-                        <Button size="sm" onClick={handleDownloadCode}>
-                           <Download className="w-4 h-4 mr-2" />
-                           Download
+                         <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
+                           <Download className="w-4 h-4" />
+                           <span className="sr-only">Download</span>
                         </Button>
                      </div>
                     <WebEditor 
@@ -311,9 +311,9 @@ root.render(
                     {template === 'react' ? 'React.js' : language}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={handleDownloadCode}>
-                       <Download className="w-4 h-4 mr-2" />
-                       Download
+                    <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
+                       <Download className="w-4 h-4" />
+                       <span className="sr-only">Download</span>
                     </Button>
                     <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
                        {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
