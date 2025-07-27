@@ -1,27 +1,25 @@
 
 'use client';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
-import { Editor } from './components/Editor';
-import { AIPanel } from './components/AIPanel';
-import { OutputTabs } from './components/OutputTabs';
+import { Editor } from '../components/Editor';
+import { AIPanel } from '../components/AIPanel';
+import { OutputTabs } from '../components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
-import { WebEditor } from './components/WebEditor';
-import { Sandbox } from './components/Sandbox';
+import { WebEditor } from '../components/WebEditor';
+import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
 import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
-function EditorView() {
-  const searchParams = useSearchParams();
-  const template = searchParams.get('template') as keyof Omit<typeof templates, 'web'> | 'web' | null;
+function EditorView({ params }: { params: { template: keyof Omit<typeof templates, 'web'> | 'web' | null } }) {
+  const { template } = params;
   const { toast } = useToast();
   
   // Single file editor state
@@ -402,10 +400,10 @@ root.render(
   );
 }
 
-export default function EditorPage() {
+export default function EditorPage({ params }: { params: { template: string }}) {
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
-      <EditorView />
+      <EditorView params={params} />
     </Suspense>
   )
 }

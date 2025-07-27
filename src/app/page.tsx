@@ -22,49 +22,49 @@ export default function Home() {
             <TemplateCard
               title="Web Project"
               description="A starter with HTML, CSS, and JavaScript."
-              href="/editor?template=web"
+              href="/editor/web"
               icon={<Globe className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="JavaScript"
               description="A blank canvas for your JavaScript code."
-              href="/editor?template=javascript"
+              href="/editor/javascript"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="Python"
               description="Start with a simple Python script."
-              href="/editor?template=python"
+              href="/editor/python"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
              <TemplateCard
               title="React"
               description="A basic client-side React example."
-              href="/editor?template=react"
+              href="/editor/react"
               icon={<Orbit className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="Vue.js"
               description="Get started with a simple Vue app."
-              href="/editor?template=vue"
+              href="/editor/vue"
               icon={<Box className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="Java"
               description="A simple 'Hello, World!' in Java."
-              href="/editor?template=java"
+              href="/editor/java"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="Go"
               description="A simple 'Hello, World!' in Go."
-              href="/editor?template=go"
+              href="/editor/go"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
               title="C#"
               description="A simple 'Hello, World!' in C#."
-              href="/editor?template=csharp"
+              href="/editor/csharp"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
           </div>
