@@ -11,7 +11,7 @@ export const Sandbox = React.forwardRef<HTMLIFrameElement, SandboxProps>(
         ref={ref}
         srcDoc={content}
         title="Website Output"
-        sandbox="allow-scripts"
+        sandbox="allow-scripts allow-same-origin"
         className="w-full h-full border-0 bg-white"
       />
     );
