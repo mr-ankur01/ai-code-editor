@@ -8,7 +8,7 @@ import { OutputTabs } from '../components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Play, Monitor, RefreshCw, Loader, Download, PanelLeft, PanelRight } from 'lucide-react';
+import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
 import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
@@ -17,23 +17,6 @@ import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 type WebLanguage = 'html' | 'css' | 'js';
-
-function EditorSidebarToggle() {
-    const sidebar = useSidebar();
-
-    if (!sidebar) {
-        return null;
-    }
-
-    return (
-        <SidebarTrigger asChild>
-          <Button variant="ghost" size="icon">
-            {sidebar.open ? <PanelRight /> : <PanelLeft />}
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
-        </SidebarTrigger>
-    )
-}
 
 function EditorView({ params: paramsPromise }: { params: Promise<{ template: keyof Omit<typeof templates, 'web'> | 'web' | null }> }) {
   const params = use(paramsPromise);
@@ -259,12 +242,9 @@ root.render(
     return (
       <SidebarProvider>
         <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-          <Header showBack={true} />
             <div className="flex-grow flex">
               <SidebarInset className="flex-grow flex flex-col">
-                <div className="flex justify-end items-center px-2 py-1 border-b">
-                  <EditorSidebarToggle />
-                </div>
+                <Header showBack={true} showSidebarToggle={true} />
                 <main className="flex-grow p-2 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
                     <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
                       <div className="flex items-center justify-between p-2 border-b">
@@ -320,12 +300,9 @@ root.render(
   return (
     <SidebarProvider>
       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-        <Header showBack={true} />
         <div className="flex-grow flex">
             <SidebarInset className="flex-grow flex flex-col">
-                <div className="flex justify-end items-center px-2 py-1 border-b">
-                  <EditorSidebarToggle />
-                </div>
+              <Header showBack={true} showSidebarToggle={true} />
               <main className="flex-grow flex flex-col gap-2 overflow-hidden p-2 h-full">
                   <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
                     <div className="flex items-center justify-between p-2 border-b">
