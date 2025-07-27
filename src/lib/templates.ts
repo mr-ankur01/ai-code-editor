@@ -1,18 +1,19 @@
+
 export const templates = {
   web: {
     html: `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CodeX Web Project</title>
-</head>
-<body>
-  <div id="root"></div>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeX Web Project</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>`,
-    css: `body { 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
+    css: `body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   display: grid;
   place-content: center;
   min-height: 100vh;
@@ -21,13 +22,15 @@ export const templates = {
   color: #1c1e21;
   transition: background-color 0.3s ease;
 }
+
 .container {
   text-align: center;
   padding: 2rem;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
@@ -40,6 +43,7 @@ button {
   font-weight: 500;
   transition: background-color 0.2s;
 }
+
 button:hover {
   background-color: #0056b3;
 }`,
