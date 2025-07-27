@@ -122,6 +122,44 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     `;
   }, [html, css, js, isMounted]);
 
+  const sandboxedVueHtml = useMemo(() => {
+    if (!isMounted) return '';
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <script src="https://unpkg.com/vue@3"></script>
+          <style>
+             body { 
+              font-family: sans-serif;
+              background-color: #ffffff;
+              color: #000000;
+              display: grid;
+              place-content: center;
+              min-height: 100vh;
+              margin: 0;
+            }
+            #app { padding: 1rem; }
+            button {
+              background-color: #42b883;
+              color: #ffffff;
+              padding: 0.5rem 1rem;
+              border: none;
+              border-radius: 0.5rem;
+              cursor: pointer;
+            }
+            button:hover {
+              opacity: 0.9;
+            }
+          </style>
+        </head>
+        <body>
+          ${code}
+        </body>
+      </html>
+    `;
+  }, [code, isMounted]);
+
 
   const getSelectedText = () => {
     if (editorRef.current) {
@@ -369,7 +407,7 @@ root.render(
                     </Button>
                   </div>
                   <div className="flex-grow">
-                    {isMounted ? <Sandbox key={refreshKey} content={code} /> : <Skeleton className="w-full h-full" />}
+                    {isMounted ? <Sandbox key={refreshKey} content={sandboxedVueHtml} /> : <Skeleton className="w-full h-full" />}
                   </div>
                 </div>
               ) : (
