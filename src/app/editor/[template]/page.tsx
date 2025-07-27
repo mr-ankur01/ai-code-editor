@@ -13,7 +13,6 @@ import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
-import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 type WebLanguage = 'html' | 'css' | 'js';
@@ -117,6 +116,41 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       </html>
     `;
   }, [html, css, js, isMounted]);
+  
+  const sandboxedReactHtml = useMemo(() => {
+    if (!isMounted) return '';
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>React Sandbox</title>
+          <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+          <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+          <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+          <style>
+            body { font-family: sans-serif; margin: 0; padding: 1rem; background-color: #ffffff; color: #000000;}
+            #root { height: 100%; }
+          </style>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="text/babel">
+            try {
+              ${code}
+              const root = ReactDOM.createRoot(document.getElementById('root'));
+              root.render(
+                <React.StrictMode>
+                  <App />
+                </React.StrictMode>
+              );
+            } catch (e) {
+              document.getElementById('root').innerText = 'Error: ' + e.message;
+            }
+          </script>
+        </body>
+      </html>
+    `;
+  }, [code, isMounted]);
 
   const getSelectedText = () => {
     if (editorRef.current) {
@@ -219,18 +253,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       default: return '';
     }
   }
-  
-  const reactIndexJs = `import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);`;
-
 
   if (template === 'web') {
     return (
@@ -291,7 +313,7 @@ root.render(
     <SidebarProvider>
       <SidebarInset>
         <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
+        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)]">
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
@@ -321,35 +343,21 @@ root.render(
             </div>
             <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
               {template === 'react' ? (
-                isMounted ? (
-                  <SandpackProvider
-                      key={refreshKey}
-                      template="react"
-                      files={{
-                        '/App.js': code,
-                        '/index.js': {
-                          code: reactIndexJs,
-                          hidden: true,
-                        },
-                      }}
-                    >
-                      <div className="flex flex-col h-full">
-                        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                          <div className="flex items-center">
-                            <Monitor className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium text-muted-foreground">Web Output</span>
-                          </div>
-                          <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                            <RefreshCw className="w-4 h-4" />
-                            <span className="sr-only">Refresh</span>
-                          </Button>
-                        </div>
-                        <div className="flex-grow h-full">
-                          <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} />
-                        </div>
+                 <div className="flex flex-col h-full">
+                    <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                      <div className="flex items-center">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        <span className="text-sm font-medium text-muted-foreground">Web Output</span>
                       </div>
-                  </SandpackProvider>
-                ) : <Skeleton className="w-full h-full" />
+                      <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                        <RefreshCw className="w-4 h-4" />
+                        <span className="sr-only">Refresh</span>
+                      </Button>
+                    </div>
+                    <div className="flex-grow">
+                      {isMounted ? <Sandbox key={refreshKey} content={sandboxedReactHtml} /> : <Skeleton className="w-full h-full" />}
+                    </div>
+                  </div>
               ) : (
                 <OutputTabs terminalOutput={terminalOutput} />
               )}
@@ -397,9 +405,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
-
-    
-
-    
