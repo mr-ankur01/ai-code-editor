@@ -96,7 +96,7 @@ function EditorView() {
         <head>
           <style>
             body { 
-              font-family: sans-serif; 
+              font-family: sans-serif;
               background-color: #ffffff;
               color: #000000;
             }
@@ -315,9 +315,9 @@ root.render(
                        <Download className="w-4 h-4" />
                        <span className="sr-only">Download</span>
                     </Button>
-                    <Button size="sm" onClick={handleRunCode} disabled={isExecuting}>
-                       {isExecuting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
-                       Run
+                    <Button variant="ghost" size="icon" onClick={handleRunCode} disabled={isExecuting}>
+                       {isExecuting ? <Loader className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                       <span className="sr-only">Run</span>
                      </Button>
                   </div>
                 </div>
