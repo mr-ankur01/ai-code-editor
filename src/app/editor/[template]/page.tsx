@@ -241,9 +241,9 @@ root.render(
   if (template === 'web') {
     return (
       <SidebarProvider>
-          <SidebarInset className="flex-grow flex flex-col bg-background text-foreground overflow-hidden">
+          <SidebarInset>
             <Header showBack={true} showSidebarToggle={true} />
-            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-full p-2">
+            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
                 <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
                   <div className="flex items-center justify-between p-2 border-b">
                       <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
@@ -279,7 +279,7 @@ root.render(
                   </div>
             </main>
           </SidebarInset>
-          <Sidebar side="right" collapsible="icon">
+          <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
               <AIPanel
                   editorCode={getActiveWebEditorCode()}
@@ -295,9 +295,9 @@ root.render(
 
   return (
     <SidebarProvider>
-      <SidebarInset className="flex-grow flex flex-col bg-background text-foreground overflow-hidden">
+      <SidebarInset>
         <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-full p-2">
+        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
@@ -378,7 +378,7 @@ root.render(
             </div>
           </main>
       </SidebarInset>
-      <Sidebar side="right" collapsible="icon">
+      <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
             <AIPanel
                 editorCode={code}
@@ -419,5 +419,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
