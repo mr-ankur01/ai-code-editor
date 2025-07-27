@@ -241,8 +241,8 @@ root.render(
   if (template === 'web') {
     return (
       <SidebarProvider>
-        <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-            <SidebarInset className="flex-grow flex flex-col">
+        <div className="flex flex-row min-h-screen bg-background text-foreground">
+            <SidebarInset className="flex-grow flex flex-col bg-background text-foreground overflow-hidden">
               <Header showBack={true} showSidebarToggle={true} />
               <main className="flex-grow p-2 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
                   <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
@@ -297,6 +297,7 @@ root.render(
 
   return (
     <SidebarProvider>
+      <div className="flex flex-row min-h-screen bg-background text-foreground">
         <SidebarInset className="flex-grow flex flex-col bg-background text-foreground overflow-hidden">
           <Header showBack={true} showSidebarToggle={true} />
           <main className="flex-grow flex flex-col gap-2 overflow-hidden p-2 h-full">
@@ -390,6 +391,7 @@ root.render(
                 />
             </SidebarContent>
         </Sidebar>
+      </div>
     </SidebarProvider>
   );
 }
@@ -421,5 +423,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
