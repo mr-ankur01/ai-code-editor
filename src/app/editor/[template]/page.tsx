@@ -9,7 +9,6 @@ import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
-import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
@@ -240,11 +239,9 @@ root.render(
 
   if (template === 'web') {
     return (
-       <SidebarProvider>
         <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-          <Header showBack={true} showSidebarToggle={true} />
-          <div className="flex flex-grow overflow-hidden">
-            <SidebarInset>
+          <Header showBack={true} />
+          <div className="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-2 p-2 overflow-hidden">
               <main className="flex-grow p-2 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
                   <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
                      <div className="flex items-center justify-between p-2 border-b">
@@ -280,30 +277,24 @@ root.render(
                       </div>
                     </div>
               </main>
-            </SidebarInset>
-             <Sidebar side="right" collapsible="icon">
-              <SidebarContent className="p-0">
+             <aside className="hidden lg:flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
                  <AIPanel
                     editorCode={getActiveWebEditorCode()}
                     setEditorCode={handleAIPanelCodeChange}
                     getSelectedText={() => ""} // TODO: Implement for multi-file editor
                     activeWebLanguage={activeWebLanguage}
                   />
-              </SidebarContent>
-            </Sidebar>
+            </aside>
           </div>
         </div>
-      </SidebarProvider>
     )
   }
 
   return (
-    <SidebarProvider>
       <div className="h-screen w-full flex flex-col bg-background text-foreground overflow-hidden">
-        <Header showBack={true} showSidebarToggle={true} />
-        <div className="flex flex-grow overflow-hidden">
-          <SidebarInset>
-            <main className="flex-grow flex flex-col gap-2 p-2 overflow-hidden">
+        <Header showBack={true} />
+        <div className="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-2 p-2 overflow-hidden">
+          <main className="flex-grow flex flex-col gap-2 overflow-hidden">
               <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between p-2 border-b">
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
@@ -383,21 +374,17 @@ root.render(
                 )}
               </div>
             </main>
-          </SidebarInset>
-
-          <Sidebar side="right" collapsible="icon">
-            <SidebarContent className="p-0">
+          
+          <aside className="hidden lg:flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden">
                <AIPanel
                   editorCode={code}
                   setEditorCode={handleAIPanelCodeChange}
                   getSelectedText={getSelectedText}
                   language={language}
                 />
-            </SidebarContent>
-          </Sidebar>
+          </aside>
         </div>
       </div>
-    </SidebarProvider>
   );
 }
 
@@ -427,3 +414,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
