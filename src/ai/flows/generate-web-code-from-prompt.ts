@@ -33,6 +33,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert web developer. Based on the user's prompt, generate three separate code blocks for a complete webpage.
 
   Provide the **full and complete code** for each language.
+  - All generated code (HTML, CSS, and JavaScript) MUST be well-formatted with proper indentation.
   - The HTML should be a complete document, starting with <!DOCTYPE html> and ending with </html>.
   - The CSS should be complete. For all text, ensure it has high contrast by using bold, black text.
   - The JavaScript should be complete and manipulate the HTML. The user will inject it separately, so you do not need to add a <script> tag for it in the HTML.
