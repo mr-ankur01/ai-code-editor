@@ -128,7 +128,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     // The generated code might be a full component with <script> or just the template part.
     // We'll wrap it in a way that handles both.
     const componentMatch = code.match(/<script>([\s\S]*)<\/script>/);
-    const templateMatch = code.match(/<div id="app">([\s\S]*)<\/div>/);
+    const templateMatch = code.match(/<template>([\s\S]*)<\/template>/);
     
     let vueScript = '';
     let vueTemplate = `<h1>Hello Vue!</h1><p>Start by generating a component.</p>`;
@@ -149,13 +149,13 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     }
 
     if (templateMatch && templateMatch[1]) {
-        vueTemplate = `<div id="app">${templateMatch[1]}</div>`;
+        vueTemplate = templateMatch[1];
     } else if (!componentMatch) { // If no script, assume the code is the template
-        vueTemplate = `<div id="app">${code}</div>`
+        vueTemplate = code;
     } else if (code.includes('<template>')) {
         const fullTemplate = code.match(/<template>([\s\S]*)<\/template>/);
         if(fullTemplate && fullTemplate[1]) {
-            vueTemplate = `<div id="app">${fullTemplate[1]}</div>`;
+            vueTemplate = fullTemplate[1];
         }
     }
 
@@ -163,7 +163,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     // This logic handles when the AI generates a full SFC-like structure vs just a template
     const finalCode = `
     const app = Vue.createApp({
-        template: \`${code.replace(/`/g, '\\`')}\`,
+        template: \`${vueTemplate.replace(/`/g, '\\`')}\`,
     });
     app.mount('#app');
     `;
@@ -172,7 +172,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       <!DOCTYPE html>
       <html>
         <head>
-          <script src="https://unpkg.com/vue@3"></script>
+          <script src="https://unpkg.com/vue@3"><\/script>
           <style>
              body { 
               font-family: sans-serif;
@@ -198,14 +198,26 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
           </style>
         </head>
         <body>
-          <div id="app"></div>
+          <div id="app">${vueTemplate}</div>
           <script>
             try {
-              ${finalCode}
+              const component = {
+                template: \`${vueTemplate.replace(/`/g, '\\`')}\`,
+                ...(() => {
+                  try {
+                    // Use a function constructor to evaluate the script in a clean scope
+                    return new Function(\`return \${/export\\s+default\\s+/.test(vueScript) ? vueScript.replace('export default', '') : vueScript}\`)();
+                  } catch(e) {
+                    // Fallback for simple data objects if the above fails
+                    return eval('(' + vueScript + ')');
+                  }
+                })()
+              };
+              Vue.createApp(component).mount('#app');
             } catch (e) {
               document.getElementById('app').innerText = 'Error mounting Vue component: ' + e.message;
             }
-          </script>
+          <\/script>
         </body>
       </html>
     `;
@@ -386,7 +398,7 @@ root.render(
     <SidebarProvider>
       <SidebarInset>
         <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)]">
+        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
