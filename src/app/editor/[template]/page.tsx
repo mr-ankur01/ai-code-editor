@@ -300,8 +300,8 @@ root.render(
       <div className="flex flex-row min-h-screen bg-background text-foreground">
         <SidebarInset className="flex-grow flex flex-col bg-background text-foreground overflow-hidden">
           <Header showBack={true} showSidebarToggle={true} />
-          <main className="flex-grow flex flex-col gap-2 overflow-hidden h-full">
-              <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col m-2 mb-0">
+          <main className="flex-grow flex flex-col gap-2 overflow-hidden h-full p-2">
+              <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between p-2 border-b">
                   <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                     {template === 'react' ? 'React.js' : language}
@@ -328,7 +328,7 @@ root.render(
                   </div>
                 </div>
               </div>
-              <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden m-2 mt-0">
+              <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
                 {template === 'react' ? (
                   isMounted ? (
                     <SandpackProvider
@@ -423,3 +423,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
