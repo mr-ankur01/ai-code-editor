@@ -52,6 +52,16 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage, language }: C
     }
   };
 
+  const getPlaceholder = () => {
+    if (activeWebLanguage) {
+      return "e.g., 'A simple counter button'";
+    }
+    if (language === 'vue') {
+      return "e.g., 'A Vue component for a shopping cart'";
+    }
+    return `e.g., 'a ${language || 'javascript'} function to reverse a string'`;
+  }
+
   return (
     <Card className="h-full flex flex-col border-0 shadow-none">
       <CardHeader className="pb-4">
@@ -62,7 +72,7 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage, language }: C
         <Textarea
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder={activeWebLanguage ? "e.g., 'A simple counter button'" : `e.g., 'a ${language || 'javascript'} function to reverse a string'`}
+          placeholder={getPlaceholder()}
           className="flex-grow resize-none"
           disabled={isLoading}
         />

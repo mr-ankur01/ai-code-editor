@@ -14,7 +14,7 @@ import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
 import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -58,7 +58,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             break;
         case 'vue':
             setCode(templates.vue);
-            setLanguage('html');
+            setLanguage('vue');
             break;
         case 'javascript':
             setCode(templates.javascript);
@@ -181,7 +181,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         const extension = {
             python: 'py',
             react: 'jsx',
-            vue: 'html',
+            vue: 'vue',
             javascript: 'js',
             java: 'java',
             go: 'go',
@@ -241,28 +241,126 @@ root.render(
   if (template === 'web') {
     return (
       <SidebarProvider>
-          <SidebarInset>
-            <Header showBack={true} showSidebarToggle={true} />
-            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
-                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
-                  <div className="flex items-center justify-between p-2 border-b">
-                      <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                        Web Project
-                      </div>
-                      <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
-                        <Download className="w-4 h-4" />
-                        <span className="sr-only">Download</span>
-                      </Button>
+          <div className="flex">
+            <SidebarInset>
+              <Header showBack={true} showSidebarToggle={true} />
+              <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
+                  <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
+                    <div className="flex items-center justify-between p-2 border-b">
+                        <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                          Web Project
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
+                          <Download className="w-4 h-4" />
+                          <span className="sr-only">Download</span>
+                        </Button>
+                    </div>
+                    <WebEditor 
+                      setEditorCode={handleWebEditorCodeChange}
+                      html={html}
+                      css={css}
+                      js={js}
+                      onTabChange={setActiveWebLanguage}
+                    />
                   </div>
-                  <WebEditor 
-                    setEditorCode={handleWebEditorCodeChange}
-                    html={html}
-                    css={css}
-                    js={js}
-                    onTabChange={setActiveWebLanguage}
+                  <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
+                      <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                        <div className="flex items-center">
+                          <Monitor className="w-4 h-4 mr-2" />
+                          <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                          <RefreshCw className="w-4 h-4" />
+                          <span className="sr-only">Refresh</span>
+                        </Button>
+                      </div>
+                      <div className="flex-grow">
+                          {isMounted ? <Sandbox key={refreshKey} content={sandboxedWebHtml} /> : <Skeleton className="w-full h-full" />}
+                      </div>
+                    </div>
+              </main>
+            </SidebarInset>
+            <Sidebar side="right" collapsible="offcanvas">
+              <SidebarContent>
+                <AIPanel
+                    editorCode={getActiveWebEditorCode()}
+                    setEditorCode={handleAIPanelCodeChange}
+                    getSelectedText={() => ""} // TODO: Implement for multi-file editor
+                    activeWebLanguage={activeWebLanguage}
                   />
+              </SidebarContent>
+            </Sidebar>
+          </div>
+      </SidebarProvider>
+    )
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="flex">
+        <SidebarInset>
+          <Header showBack={true} showSidebarToggle={true} />
+          <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)]">
+              <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col m-2">
+                <div className="flex items-center justify-between p-2 border-b">
+                  <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                    {template === 'react' ? 'React.js' : template === 'vue' ? 'Vue.js' : language}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
+                      <Download className="w-4 h-4" />
+                      <span className="sr-only">Download</span>
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={handleRunCode} disabled={isExecuting}>
+                      {isExecuting ? <Loader className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                      <span className="sr-only">Run</span>
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
+                <div className="relative flex-1">
+                  <div className="absolute inset-0">
+                    <Editor
+                      ref={editorRef}
+                      code={code}
+                      setCode={setCode}
+                      language={template === 'vue' ? 'html' : language}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden m-2 mt-0">
+                {template === 'react' ? (
+                  isMounted ? (
+                    <SandpackProvider
+                        key={refreshKey}
+                        template="react"
+                        files={{
+                          '/App.js': code,
+                          '/index.js': {
+                            code: reactIndexJs,
+                            hidden: true,
+                          },
+                        }}
+                      >
+                        <div className="flex flex-col h-full">
+                          <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
+                            <div className="flex items-center">
+                              <Monitor className="w-4 h-4 mr-2" />
+                              <span className="text-sm font-medium text-muted-foreground">Web Output</span>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                              <RefreshCw className="w-4 h-4" />
+                              <span className="sr-only">Refresh</span>
+                            </Button>
+                          </div>
+                          <div className="flex-grow h-full">
+                            <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} />
+                          </div>
+                        </div>
+                    </SandpackProvider>
+                  ) : <Skeleton className="w-full h-full" />
+                ) : template === 'vue' ? (
+                  <div className="flex flex-col h-full">
                     <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
                       <div className="flex items-center">
                         <Monitor className="w-4 h-4 mr-2" />
@@ -274,120 +372,26 @@ root.render(
                       </Button>
                     </div>
                     <div className="flex-grow">
-                        {isMounted ? <Sandbox key={refreshKey} content={sandboxedWebHtml} /> : <Skeleton className="w-full h-full" />}
+                      {isMounted ? <Sandbox key={refreshKey} content={code} /> : <Skeleton className="w-full h-full" />}
                     </div>
                   </div>
+                ) : (
+                  <OutputTabs terminalOutput={terminalOutput} />
+                )}
+              </div>
             </main>
-          </SidebarInset>
-          <Sidebar side="right" collapsible="offcanvas">
+        </SidebarInset>
+        <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
               <AIPanel
-                  editorCode={getActiveWebEditorCode()}
+                  editorCode={code}
                   setEditorCode={handleAIPanelCodeChange}
-                  getSelectedText={() => ""} // TODO: Implement for multi-file editor
-                  activeWebLanguage={activeWebLanguage}
+                  getSelectedText={getSelectedText}
+                  language={language}
                 />
             </SidebarContent>
-          </Sidebar>
-      </SidebarProvider>
-    )
-  }
-
-  return (
-    <SidebarProvider>
-      <SidebarInset>
-        <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
-            <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between p-2 border-b">
-                <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                  {template === 'react' ? 'React.js' : language}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
-                    <Download className="w-4 h-4" />
-                    <span className="sr-only">Download</span>
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={handleRunCode} disabled={isExecuting}>
-                    {isExecuting ? <Loader className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                    <span className="sr-only">Run</span>
-                  </Button>
-                </div>
-              </div>
-              <div className="relative flex-1">
-                <div className="absolute inset-0">
-                  <Editor
-                    ref={editorRef}
-                    code={code}
-                    setCode={setCode}
-                    language={language}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
-              {template === 'react' ? (
-                isMounted ? (
-                  <SandpackProvider
-                      key={refreshKey}
-                      template="react"
-                      files={{
-                        '/App.js': code,
-                        '/index.js': {
-                          code: reactIndexJs,
-                          hidden: true,
-                        },
-                      }}
-                    >
-                      <div className="flex flex-col h-full">
-                        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                          <div className="flex items-center">
-                            <Monitor className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium text-muted-foreground">Web Output</span>
-                          </div>
-                          <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                            <RefreshCw className="w-4 h-4" />
-                            <span className="sr-only">Refresh</span>
-                          </Button>
-                        </div>
-                        <div className="flex-grow h-full">
-                          <SandpackPreview showRefreshButton={false} showOpenInCodeSandbox={false} />
-                        </div>
-                      </div>
-                  </SandpackProvider>
-                ) : <Skeleton className="w-full h-full" />
-              ) : template === 'vue' ? (
-                <div className="flex flex-col h-full">
-                  <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                    <div className="flex items-center">
-                      <Monitor className="w-4 h-4 mr-2" />
-                      <span className="text-sm font-medium text-muted-foreground">Web Output</span>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                      <RefreshCw className="w-4 h-4" />
-                      <span className="sr-only">Refresh</span>
-                    </Button>
-                  </div>
-                  <div className="flex-grow">
-                    {isMounted ? <Sandbox key={refreshKey} content={code} /> : <Skeleton className="w-full h-full" />}
-                  </div>
-                </div>
-              ) : (
-                <OutputTabs terminalOutput={terminalOutput} />
-              )}
-            </div>
-          </main>
-      </SidebarInset>
-      <Sidebar side="right" collapsible="offcanvas">
-          <SidebarContent>
-            <AIPanel
-                editorCode={code}
-                setEditorCode={handleAIPanelCodeChange}
-                getSelectedText={getSelectedText}
-                language={language}
-              />
-          </SidebarContent>
-      </Sidebar>
+        </Sidebar>
+      </div>
     </SidebarProvider>
   );
 }
