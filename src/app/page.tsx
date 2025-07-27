@@ -37,12 +37,6 @@ export default function Home() {
               href="/editor/python"
               icon={<Code className="w-10 h-10 text-primary" />}
             />
-             <TemplateCard
-              title="React"
-              description="A basic client-side React example."
-              href="/editor/react"
-              icon={<Orbit className="w-10 h-10 text-primary" />}
-            />
             <TemplateCard
               title="Java"
               description="A simple 'Hello, World!' in Java."

@@ -51,10 +51,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         case 'python':
           setLanguage('python');
           break;
-        case 'react':
-            setCode(templates.react);
-            setLanguage('javascript');
-            break;
         case 'javascript':
             setCode(templates.javascript);
             setLanguage('javascript');
@@ -77,7 +73,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       setCss(templates.web.css);
       setJs(templates.web.js);
     } else {
-      setCode(templates.react);
+      setCode(templates.javascript);
       setLanguage('javascript');
     }
   }, [template]);
@@ -117,41 +113,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     `;
   }, [html, css, js, isMounted]);
   
-  const sandboxedReactHtml = useMemo(() => {
-    if (!isMounted) return '';
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>React Sandbox</title>
-          <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-          <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-          <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-          <style>
-            body { font-family: sans-serif; margin: 0; padding: 1rem; background-color: #ffffff; color: #000000;}
-            #root { height: 100%; }
-          </style>
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="text/babel">
-            try {
-              ${code}
-              const root = ReactDOM.createRoot(document.getElementById('root'));
-              root.render(
-                <React.StrictMode>
-                  <App />
-                </React.StrictMode>
-              );
-            } catch (e) {
-              document.getElementById('root').innerText = 'Error: ' + e.message;
-            }
-          </script>
-        </body>
-      </html>
-    `;
-  }, [code, isMounted]);
-
   const getSelectedText = () => {
     if (editorRef.current) {
       const model = editorRef.current.getModel();
@@ -165,7 +126,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   };
   
   const handleRunCode = async () => {
-    if (template === 'react' || template === 'web') {
+    if (template === 'web') {
       setRefreshKey(prev => prev + 1);
       return;
     }
@@ -209,7 +170,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         content = code;
         const extension = {
             python: 'py',
-            react: 'jsx',
             javascript: 'js',
             java: 'java',
             go: 'go',
@@ -313,11 +273,11 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     <SidebarProvider>
       <SidebarInset>
         <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)]">
+        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                  {template === 'react' ? 'React.js' : language}
+                  {language}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
@@ -342,25 +302,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
               </div>
             </div>
             <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
-              {template === 'react' ? (
-                 <div className="flex flex-col h-full">
-                    <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
-                      <div className="flex items-center">
-                        <Monitor className="w-4 h-4 mr-2" />
-                        <span className="text-sm font-medium text-muted-foreground">Web Output</span>
-                      </div>
-                      <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                        <RefreshCw className="w-4 h-4" />
-                        <span className="sr-only">Refresh</span>
-                      </Button>
-                    </div>
-                    <div className="flex-grow">
-                      {isMounted ? <Sandbox key={refreshKey} content={sandboxedReactHtml} /> : <Skeleton className="w-full h-full" />}
-                    </div>
-                  </div>
-              ) : (
-                <OutputTabs terminalOutput={terminalOutput} />
-              )}
+              <OutputTabs terminalOutput={terminalOutput} />
             </div>
           </main>
       </SidebarInset>
