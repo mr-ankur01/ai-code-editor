@@ -1,6 +1,6 @@
 
 'use client';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState, use } from 'react';
 import { Header } from '@/components/Header';
 import { Editor } from '../components/Editor';
 import { AIPanel } from '../components/AIPanel';
@@ -18,7 +18,8 @@ import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
-function EditorView({ params }: { params: { template: keyof Omit<typeof templates, 'web'> | 'web' | null } }) {
+function EditorView({ params: paramsPromise }: { params: Promise<{ template: keyof Omit<typeof templates, 'web'> | 'web' | null }> }) {
+  const params = use(paramsPromise);
   const { template } = params;
   const { toast } = useToast();
   
@@ -403,7 +404,7 @@ root.render(
 export default function EditorPage({ params }: { params: { template: string }}) {
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
-      <EditorView params={params} />
+      <EditorView params={Promise.resolve(params)} />
     </Suspense>
   )
 }
