@@ -125,8 +125,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   const sandboxedVueHtml = useMemo(() => {
     if (!isMounted) return '';
 
-    // The generated code might be a full component with <script> or just the template part.
-    // We'll wrap it in a way that handles both.
     const componentMatch = code.match(/<script>([\s\S]*)<\/script>/);
     const templateMatch = code.match(/<template>([\s\S]*)<\/template>/);
     
@@ -134,23 +132,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     let vueTemplate = `<h1>Hello Vue!</h1><p>Start by generating a component.</p>`;
 
     if (componentMatch && componentMatch[1]) {
-        vueScript = componentMatch[1];
+        vueScript = componentMatch[1].trim();
     } else {
-        // Assume the entire code is a data object for a simple component
-        vueScript = `
-            export default {
-                data() {
-                    return {
-                        message: 'Hello Vue!'
-                    }
-                }
-            }
-        `;
+        vueScript = `export default { data() { return { message: 'Hello Vue!' } } }`;
     }
 
     if (templateMatch && templateMatch[1]) {
         vueTemplate = templateMatch[1];
-    } else if (!componentMatch) { // If no script, assume the code is the template
+    } else if (!componentMatch) {
         vueTemplate = code;
     } else if (code.includes('<template>')) {
         const fullTemplate = code.match(/<template>([\s\S]*)<\/template>/);
@@ -158,15 +147,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             vueTemplate = fullTemplate[1];
         }
     }
-
-
-    // This logic handles when the AI generates a full SFC-like structure vs just a template
-    const finalCode = `
-    const app = Vue.createApp({
-        template: \`${vueTemplate.replace(/`/g, '\\`')}\`,
-    });
-    app.mount('#app');
-    `;
     
     return `
       <!DOCTYPE html>
@@ -198,16 +178,19 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
           </style>
         </head>
         <body>
-          <div id="app">${vueTemplate}</div>
+          <div id="app"></div>
           <script>
             try {
+              const vueScript = \`${vueScript.replace(/`/g, '\\`')}\`;
+              const vueTemplate = \`${vueTemplate.replace(/`/g, '\\`')}\`;
+
               const component = {
-                template: \`${vueTemplate.replace(/`/g, '\\`')}\`,
+                template: vueTemplate,
                 ...(() => {
                   try {
-                    // Use a function constructor to evaluate the script in a clean scope
                     return new Function(\`return \${/export\\s+default\\s+/.test(vueScript) ? vueScript.replace('export default', '') : vueScript}\`)();
                   } catch(e) {
+                    console.error('Failed to parse script with Function constructor:', e);
                     // Fallback for simple data objects if the above fails
                     return eval('(' + vueScript + ')');
                   }
@@ -216,6 +199,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
               Vue.createApp(component).mount('#app');
             } catch (e) {
               document.getElementById('app').innerText = 'Error mounting Vue component: ' + e.message;
+              console.error('Vue mounting error:', e);
             }
           <\/script>
         </body>
@@ -520,6 +504,8 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
 
     
 
