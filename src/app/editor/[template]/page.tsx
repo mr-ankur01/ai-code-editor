@@ -14,7 +14,7 @@ import { Sandbox } from '../components/Sandbox';
 import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
 import { useToast } from '@/hooks/use-toast';
 import { SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
-import { Sidebar, SidebarContent, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -457,3 +457,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
