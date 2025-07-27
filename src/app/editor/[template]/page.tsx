@@ -124,6 +124,50 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
   const sandboxedVueHtml = useMemo(() => {
     if (!isMounted) return '';
+
+    // The generated code might be a full component with <script> or just the template part.
+    // We'll wrap it in a way that handles both.
+    const componentMatch = code.match(/<script>([\s\S]*)<\/script>/);
+    const templateMatch = code.match(/<div id="app">([\s\S]*)<\/div>/);
+    
+    let vueScript = '';
+    let vueTemplate = `<h1>Hello Vue!</h1><p>Start by generating a component.</p>`;
+
+    if (componentMatch && componentMatch[1]) {
+        vueScript = componentMatch[1];
+    } else {
+        // Assume the entire code is a data object for a simple component
+        vueScript = `
+            export default {
+                data() {
+                    return {
+                        message: 'Hello Vue!'
+                    }
+                }
+            }
+        `;
+    }
+
+    if (templateMatch && templateMatch[1]) {
+        vueTemplate = `<div id="app">${templateMatch[1]}</div>`;
+    } else if (!componentMatch) { // If no script, assume the code is the template
+        vueTemplate = `<div id="app">${code}</div>`
+    } else if (code.includes('<template>')) {
+        const fullTemplate = code.match(/<template>([\s\S]*)<\/template>/);
+        if(fullTemplate && fullTemplate[1]) {
+            vueTemplate = `<div id="app">${fullTemplate[1]}</div>`;
+        }
+    }
+
+
+    // This logic handles when the AI generates a full SFC-like structure vs just a template
+    const finalCode = `
+    const app = Vue.createApp({
+        template: \`${code.replace(/`/g, '\\`')}\`,
+    });
+    app.mount('#app');
+    `;
+    
     return `
       <!DOCTYPE html>
       <html>
@@ -154,7 +198,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
           </style>
         </head>
         <body>
-          ${code}
+          <div id="app"></div>
+          <script>
+            try {
+              ${finalCode}
+            } catch (e) {
+              document.getElementById('app').innerText = 'Error mounting Vue component: ' + e.message;
+            }
+          </script>
         </body>
       </html>
     `;
@@ -281,8 +332,8 @@ root.render(
       <SidebarProvider>
           <SidebarInset>
             <Header showBack={true} showSidebarToggle={true} />
-            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
-                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
+            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)]">
+                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full p-2">
                   <div className="flex items-center justify-between p-2 border-b">
                       <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                         Web Project
@@ -300,7 +351,7 @@ root.render(
                     onTabChange={setActiveWebLanguage}
                   />
                 </div>
-                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full">
+                <div className="flex flex-col rounded-lg border bg-card shadow-sm overflow-hidden h-full p-2">
                     <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50">
                       <div className="flex items-center">
                         <Monitor className="w-4 h-4 mr-2" />
@@ -335,8 +386,8 @@ root.render(
     <SidebarProvider>
       <SidebarInset>
         <Header showBack={true} showSidebarToggle={true} />
-        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
-            <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+        <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)]">
+            <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
                   {template === 'react' ? 'React.js' : template === 'vue' ? 'Vue.js' : language}
@@ -363,7 +414,7 @@ root.render(
                 </div>
               </div>
             </div>
-            <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden">
+            <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
               {template === 'react' ? (
                 isMounted ? (
                   <SandpackProvider
@@ -457,5 +508,7 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
 
     
