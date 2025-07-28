@@ -147,13 +147,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     try {
       const result = await simulateCodeExecution({ code, language });
       setTerminalOutput(prev => `${prev}\n${result.output}`);
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
         variant: 'destructive',
         title: 'Execution Error',
         description: 'The AI failed to simulate the code execution.',
       });
-       setTerminalOutput(prev => `${prev}\nAn error occurred during API simulation.`);
+       setTerminalOutput(prev => `${prev}\nError: ${errorMessage}`);
     } finally {
       setIsExecuting(false);
     }
@@ -347,5 +348,7 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
 
     
