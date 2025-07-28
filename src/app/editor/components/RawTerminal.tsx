@@ -39,10 +39,19 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     
     term.open(terminalRef.current);
     
+    const safeFit = () => {
+      // Ensure the terminal's container is rendered and visible before fitting
+      if (terminalRef.current && terminalRef.current.clientHeight > 0 && terminalRef.current.clientWidth > 0) {
+        try {
+          fitAddon.fit();
+        } catch (e) {
+          console.error("Failed to fit terminal:", e);
+        }
+      }
+    };
+    
     // Delay fit to ensure the terminal is fully rendered
-    setTimeout(() => {
-      fitAddon.fit();
-    }, 0);
+    setTimeout(safeFit, 1);
 
     xtermRef.current = term;
     
@@ -82,7 +91,7 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     });
     
     const handleResize = () => {
-        fitAddon.fit();
+        safeFit();
     };
 
     window.addEventListener('resize', handleResize);
