@@ -10,13 +10,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SimulateCodeExecutionStreamInputSchema = z.object({
+const SimulateCodeExecutionStreamInputSchema = z.object({
   code: z.string().describe('The code to simulate.'),
   language: z.string().describe('The programming language of the code.'),
 });
 export type SimulateCodeExecutionStreamInput = z.infer<typeof SimulateCodeExecutionStreamInputSchema>;
 
-export const simulateCodeExecutionStream = ai.defineFlow(
+// This is the internal flow definition, which is not exported.
+const simulateCodeExecutionStreamFlow = ai.defineFlow(
   {
     name: 'simulateCodeExecutionStream',
     inputSchema: SimulateCodeExecutionStreamInputSchema,
@@ -36,7 +37,7 @@ ${input.code}
 
     const {stream} = ai.generateStream({
         prompt: prompt,
-        model: 'googleai/gemini-2.0-flash'
+        model: 'googleai/gemini-pro'
     });
 
     let result = '';
@@ -48,3 +49,11 @@ ${input.code}
     return result;
   }
 );
+
+// This is the exported async function that satisfies the 'use server' constraint.
+export async function simulateCodeExecutionStream(
+    input: SimulateCodeExecutionStreamInput,
+    streamingCallback?: (chunk: string) => void
+): Promise<string> {
+    return simulateCodeExecutionStreamFlow(input, streamingCallback);
+}
