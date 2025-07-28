@@ -142,18 +142,18 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
     setIsExecuting(true);
     const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
-    setTerminalOutput(\`> Running \${fileName}...\n\`);
+    setTerminalOutput(`> Running ${fileName}...`);
 
     try {
       const result = await simulateCodeExecution({ code, language });
-      setTerminalOutput(prev => prev + result.output);
+      setTerminalOutput(prev => `${prev}\n${result.output}`);
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Execution Error',
         description: 'The AI failed to simulate the code execution.',
       });
-       setTerminalOutput(prev => prev + 'An error occurred during API simulation.');
+       setTerminalOutput(prev => `${prev}\nAn error occurred during API simulation.`);
     } finally {
       setIsExecuting(false);
     }
@@ -165,7 +165,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
     if (template === 'web') {
         content = getActiveWebEditorCode();
-        filename = `index.\${activeWebLanguage}\`;
+        filename = `index.${activeWebLanguage}`;
     } else {
         content = code;
         const extension = {
@@ -175,7 +175,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             go: 'go',
             csharp: 'cs'
         }[template || ''] || 'txt';
-        filename = `\${template || 'code'}.\${extension}\`;
+        filename = `${template || 'code'}.${extension}`;
     }
 
     const blob = new Blob([content], { type: 'text/plain' });
@@ -347,3 +347,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
