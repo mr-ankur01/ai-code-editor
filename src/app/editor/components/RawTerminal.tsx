@@ -1,3 +1,4 @@
+
 'use client';
 import 'xterm/css/xterm.css';
 import React, { useEffect, useRef } from 'react';
@@ -37,7 +38,11 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     term.loadAddon(new WebLinksAddon());
     
     term.open(terminalRef.current);
-    fitAddon.fit();
+    
+    // Delay fit to ensure the terminal is fully rendered
+    setTimeout(() => {
+      fitAddon.fit();
+    }, 0);
 
     xtermRef.current = term;
     
