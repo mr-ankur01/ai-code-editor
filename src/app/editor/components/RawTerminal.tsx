@@ -4,18 +4,16 @@ import 'xterm/css/xterm.css';
 import React, { useEffect, useRef } from 'react';
 
 interface RawTerminalProps {
-  simulationOutput?: string;
-  executionOutput?: { output: string[], key: number } | null;
+  streamingOutput?: { content: string, key: number } | null;
   onCommand?: (command: string) => void;
 }
 
-export function RawTerminal({ simulationOutput, executionOutput, onCommand }: RawTerminalProps) {
+export function RawTerminal({ streamingOutput, onCommand }: RawTerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<any | null>(null);
-  const commandRef = useRef<string>('');
   const fitAddonRef = useRef<any | null>(null);
   const isInitialized = useRef(false);
-  const lastSimulationOutput = useRef('');
+  const lastKey = useRef<number | null>(null);
 
   useEffect(() => {
     if (!terminalRef.current || isInitialized.current) {
@@ -64,41 +62,16 @@ export function RawTerminal({ simulationOutput, executionOutput, onCommand }: Ra
         
         isInitialized.current = true;
 
-        if (simulationOutput) {
-            term.write(simulationOutput.replace(/\n/g, '\r\n'));
-            lastSimulationOutput.current = simulationOutput;
+        if (streamingOutput) {
+            term.write(streamingOutput.content.replace(/\n/g, '\r\n'));
+            lastKey.current = streamingOutput.key;
         }
 
         const prompt = () => {
-          commandRef.current = '';
           term.write('\r\n$ ');
         };
         
-        if (!simulationOutput) {
-          prompt();
-        }
-
-
-        term.onKey(({ key, domEvent }: { key: string, domEvent: KeyboardEvent }) => {
-          const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
-
-          if (domEvent.keyCode === 13) { // Enter
-            if (onCommand && commandRef.current) {
-              onCommand(commandRef.current);
-            } else {
-              term.write(`\r\ncommand not found: ${commandRef.current}`);
-            }
-            prompt();
-          } else if (domEvent.keyCode === 8) { // Backspace
-            if (commandRef.current.length > 0) {
-              term.write('\b \b');
-              commandRef.current = commandRef.current.slice(0, -1);
-            }
-          } else if (printable) {
-            commandRef.current += key;
-            term.write(key);
-          }
-        });
+        prompt();
     }
 
     initTerminal();
@@ -120,7 +93,6 @@ export function RawTerminal({ simulationOutput, executionOutput, onCommand }: Ra
       resizeObserver.observe(terminalRef.current.parentElement);
     }
     
-    // Cleanup
     return () => {
       resizeObserver.disconnect();
       if (term) {
@@ -128,26 +100,21 @@ export function RawTerminal({ simulationOutput, executionOutput, onCommand }: Ra
       }
       isInitialized.current = false;
     };
-  }, []); // Run only once on mount
+  }, []);
 
-  // Handle AI simulation output changes
   useEffect(() => {
-    if (xtermRef.current && simulationOutput && simulationOutput !== lastSimulationOutput.current) {
-        xtermRef.current.write(simulationOutput.replace(lastSimulationOutput.current, '').replace(/\n/g, '\r\n'));
-        lastSimulationOutput.current = simulationOutput;
+    if (xtermRef.current && streamingOutput) {
+        if (lastKey.current !== streamingOutput.key) {
+            // New execution, clear the terminal
+            xtermRef.current.clear();
+            lastKey.current = streamingOutput.key;
+        }
+        // Always write the full current content
+        xtermRef.current.write('\r' + ' '.repeat(xtermRef.current.cols) + '\r'); // Clear line
+        xtermRef.current.write(streamingOutput.content.replace(/\n/g, '\r\n'));
     }
-  }, [simulationOutput]);
+  }, [streamingOutput]);
 
-  // Handle direct JS execution output
-  useEffect(() => {
-    if (xtermRef.current && executionOutput) {
-        xtermRef.current.clear();
-        executionOutput.output.forEach((line: string) => {
-            xtermRef.current.writeln(line);
-        });
-        xtermRef.current.write('$ ');
-    }
-  }, [executionOutput]);
 
   return <div className="absolute inset-0" ref={terminalRef} />;
 }

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
 import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
-import { simulateCodeExecution } from '@/ai/flows/simulate-code-execution';
+import { simulateCodeExecutionStream } from '@/ai/flows/simulate-code-execution-stream';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
@@ -25,8 +25,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   // Single file editor state
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
-  const [terminalOutput, setTerminalOutput] = useState('');
-  const [terminalExecution, setTerminalExecution] = useState<{ output: string[], key: number } | null>(null);
+  const [terminalStream, setTerminalStream] = useState<{ content: string, key: number } | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const editorRef = useRef<any>(null);
 
@@ -151,11 +150,9 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
         console.log = (...args) => {
             output.push(args.map(arg => typeof arg === 'string' ? arg : JSON.stringify(arg)).join(' '));
-            originalLog.apply(console, args);
         };
         console.error = (...args) => {
             output.push(`Error: ${args.map(arg => arg instanceof Error ? arg.message : String(arg)).join(' ')}`);
-            originalError.apply(console, args);
         };
 
         try {
@@ -165,27 +162,37 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         } finally {
             console.log = originalLog;
             console.error = originalError;
-            setTerminalExecution({ output, key: Date.now() });
+            setTerminalStream({ content: output.join('\n'), key: Date.now() });
             setIsExecuting(false);
         }
         return;
     }
     
-    setTerminalOutput(`> Running ${fileName}...`);
+    setTerminalStream({ content: `> Running ${fileName}...\n`, key: Date.now() });
 
     try {
-      const result = await simulateCodeExecution({ code, language });
-      setTerminalOutput(prev => `${prev}\n${result.output}`);
-    } catch (error: any) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      toast({
-        variant: 'destructive',
-        title: 'Execution Error',
-        description: 'The AI failed to simulate the code execution.',
-      });
-       setTerminalOutput(prev => `${prev}\nError: ${errorMessage}`);
-    } finally {
-      setIsExecuting(false);
+        simulateCodeExecutionStream({ code, language }, (chunk) => {
+            setTerminalStream(prev => ({ content: (prev?.content || '') + chunk, key: prev?.key || Date.now() }));
+        }).catch(error => {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            toast({
+                variant: 'destructive',
+                title: 'Execution Error',
+                description: 'The AI failed to simulate the code execution.',
+            });
+            setTerminalStream(prev => ({ content: (prev?.content || '') + `\nError: ${errorMessage}`, key: prev?.key || Date.now() }));
+        }).finally(() => {
+            setIsExecuting(false);
+        });
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        toast({
+            variant: 'destructive',
+            title: 'Execution Error',
+            description: 'The AI failed to simulate the code execution.',
+        });
+        setTerminalStream(prev => ({ content: (prev?.content || '') + `\nError: ${errorMessage}`, key: prev?.key || Date.now() }));
+        setIsExecuting(false);
     }
   };
 
@@ -333,8 +340,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             </div>
             <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
               <OutputTabs 
-                simulationOutput={language !== 'javascript' ? terminalOutput : undefined}
-                executionOutput={language === 'javascript' ? terminalExecution : undefined}
+                streamingOutput={terminalStream}
               />
             </div>
           </main>
