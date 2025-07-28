@@ -4,17 +4,18 @@ import 'xterm/css/xterm.css';
 import React, { useEffect, useRef } from 'react';
 
 interface RawTerminalProps {
-  initialOutput?: string;
+  simulationOutput?: string;
+  executionOutput?: { output: string[], key: number } | null;
   onCommand?: (command: string) => void;
 }
 
-export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
+export function RawTerminal({ simulationOutput, executionOutput, onCommand }: RawTerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<any | null>(null);
   const commandRef = useRef<string>('');
   const fitAddonRef = useRef<any | null>(null);
   const isInitialized = useRef(false);
-  const lastOutput = useRef('');
+  const lastSimulationOutput = useRef('');
 
   useEffect(() => {
     if (!terminalRef.current || isInitialized.current) {
@@ -63,9 +64,9 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
         
         isInitialized.current = true;
 
-        if (initialOutput) {
-            term.write(initialOutput.replace(/\n/g, '\r\n'));
-            lastOutput.current = initialOutput;
+        if (simulationOutput) {
+            term.write(simulationOutput.replace(/\n/g, '\r\n'));
+            lastSimulationOutput.current = simulationOutput;
         }
 
         const prompt = () => {
@@ -73,7 +74,7 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
           term.write('\r\n$ ');
         };
         
-        if (!initialOutput) {
+        if (!simulationOutput) {
           prompt();
         }
 
@@ -129,13 +130,24 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     };
   }, []); // Run only once on mount
 
-  // Handle external output changes
+  // Handle AI simulation output changes
   useEffect(() => {
-    if (xtermRef.current && initialOutput && initialOutput !== lastOutput.current) {
-        xtermRef.current.write(initialOutput.replace(lastOutput.current, '').replace(/\n/g, '\r\n'));
-        lastOutput.current = initialOutput;
+    if (xtermRef.current && simulationOutput && simulationOutput !== lastSimulationOutput.current) {
+        xtermRef.current.write(simulationOutput.replace(lastSimulationOutput.current, '').replace(/\n/g, '\r\n'));
+        lastSimulationOutput.current = simulationOutput;
     }
-  }, [initialOutput]);
+  }, [simulationOutput]);
+
+  // Handle direct JS execution output
+  useEffect(() => {
+    if (xtermRef.current && executionOutput) {
+        xtermRef.current.clear();
+        executionOutput.output.forEach((line: string) => {
+            xtermRef.current.writeln(line);
+        });
+        xtermRef.current.write('$ ');
+    }
+  }, [executionOutput]);
 
   return <div className="absolute inset-0" ref={terminalRef} />;
 }

@@ -2,10 +2,11 @@ import { TerminalSquare } from 'lucide-react';
 import { RawTerminal } from './RawTerminal';
 
 interface OutputTabsProps {
-  terminalOutput: string;
+  simulationOutput?: string;
+  executionOutput?: { output: string[], key: number } | null;
 }
 
-export function OutputTabs({ terminalOutput }: OutputTabsProps) {
+export function OutputTabs({ simulationOutput, executionOutput }: OutputTabsProps) {
   return (
     <div className="w-full h-full flex flex-col">
        <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50 shrink-0">
@@ -15,7 +16,10 @@ export function OutputTabs({ terminalOutput }: OutputTabsProps) {
           </div>
         </div>
       <div className="flex-grow p-2 relative">
-         <RawTerminal initialOutput={terminalOutput} />
+         <RawTerminal 
+            simulationOutput={simulationOutput}
+            executionOutput={executionOutput} 
+         />
       </div>
     </div>
   );

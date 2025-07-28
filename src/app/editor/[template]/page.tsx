@@ -26,6 +26,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [terminalOutput, setTerminalOutput] = useState('');
+  const [terminalExecution, setTerminalExecution] = useState<{ output: string[], key: number } | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const editorRef = useRef<any>(null);
 
@@ -142,6 +143,34 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
     setIsExecuting(true);
     const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
+
+    if (language === 'javascript') {
+        const output: string[] = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = (...args) => {
+            output.push(args.map(arg => typeof arg === 'string' ? arg : JSON.stringify(arg)).join(' '));
+            originalLog.apply(console, args);
+        };
+        console.error = (...args) => {
+            output.push(`Error: ${args.map(arg => arg instanceof Error ? arg.message : String(arg)).join(' ')}`);
+            originalError.apply(console, args);
+        };
+
+        try {
+            new Function(code)();
+        } catch (e: any) {
+            output.push(`Error: ${e.message}`);
+        } finally {
+            console.log = originalLog;
+            console.error = originalError;
+            setTerminalExecution({ output, key: Date.now() });
+            setIsExecuting(false);
+        }
+        return;
+    }
+    
     setTerminalOutput(`> Running ${fileName}...`);
 
     try {
@@ -303,7 +332,10 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
               </div>
             </div>
             <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
-              <OutputTabs terminalOutput={terminalOutput} />
+              <OutputTabs 
+                simulationOutput={language !== 'javascript' ? terminalOutput : undefined}
+                executionOutput={language === 'javascript' ? terminalExecution : undefined}
+              />
             </div>
           </main>
       </SidebarInset>
@@ -348,7 +380,3 @@ function EditorPageSkeleton() {
     </div>
   )
 }
-
-    
-
-    
