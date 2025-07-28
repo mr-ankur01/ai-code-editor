@@ -1,4 +1,3 @@
-
 'use client';
 import 'xterm/css/xterm.css';
 import React, { useEffect, useRef } from 'react';
