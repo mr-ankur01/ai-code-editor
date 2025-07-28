@@ -14,7 +14,7 @@ export function OutputTabs({ terminalOutput }: OutputTabsProps) {
             <span className="text-sm font-medium text-muted-foreground">Terminal</span>
           </div>
         </div>
-      <div className="flex-grow p-2">
+      <div className="flex-grow p-2 relative">
          <RawTerminal initialOutput={terminalOutput} />
       </div>
     </div>

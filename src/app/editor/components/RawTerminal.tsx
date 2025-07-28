@@ -108,11 +108,14 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
         }
     };
     
-    window.addEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (terminalRef.current) {
+      resizeObserver.observe(terminalRef.current.parentElement!);
+    }
     
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       if (xtermRef.current) {
         xtermRef.current.dispose();
         xtermRef.current = null;
@@ -132,5 +135,5 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     }
   }, [initialOutput])
 
-  return <div className="h-full w-full" ref={terminalRef} />;
+  return <div className="absolute inset-0" ref={terminalRef} />;
 }
