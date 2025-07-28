@@ -19,14 +19,15 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     if (!terminalRef.current || isInitialized.current) {
       return;
     }
+
+    let term: any;
     
-    // Dynamically import xterm and its addons
     const initTerminal = async () => {
         const { Terminal } = await import('xterm');
         const { FitAddon } = await import('xterm-addon-fit');
         const { WebLinksAddon } = await import('xterm-addon-web-links');
 
-        const term = new Terminal({
+        term = new Terminal({
           cursorBlink: true,
           convertEol: true,
           fontFamily: 'Menlo, Monaco, "Courier New", monospace',
@@ -37,6 +38,7 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
             cursor: 'hsl(var(--foreground))',
           },
         });
+        xtermRef.current = term;
         
         const fitAddon = new FitAddon();
         fitAddonRef.current = fitAddon;
@@ -58,7 +60,6 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
 
         setTimeout(safeFit, 1);
         
-        xtermRef.current = term;
         isInitialized.current = true;
 
         if (initialOutput) {
@@ -71,7 +72,7 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
         };
         prompt();
 
-        term.onKey(({ key, domEvent }) => {
+        term.onKey(({ key, domEvent }: { key: string, domEvent: KeyboardEvent }) => {
           const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
 
           if (domEvent.keyCode === 13) { // Enter
@@ -109,16 +110,15 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
     };
     
     const resizeObserver = new ResizeObserver(handleResize);
-    if (terminalRef.current) {
-      resizeObserver.observe(terminalRef.current.parentElement!);
+    if (terminalRef.current?.parentElement) {
+      resizeObserver.observe(terminalRef.current.parentElement);
     }
     
     // Cleanup
     return () => {
       resizeObserver.disconnect();
-      if (xtermRef.current) {
-        xtermRef.current.dispose();
-        xtermRef.current = null;
+      if (term) {
+        term.dispose();
       }
       isInitialized.current = false;
     };
@@ -127,13 +127,16 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
   // Handle external output changes
   useEffect(() => {
     if (xtermRef.current && initialOutput) {
-        if(!xtermRef.current.getBuffer().active.getLine(0)?.isWrapped) {
-            xtermRef.current.clear();
-            xtermRef.current.write(initialOutput.replace(/\n/g, '\r\n'));
-            xtermRef.current.write('\r\n$ ');
+        // This check is to prevent clearing and rewriting the terminal if the output is the same.
+        // It's a simple check and might not cover all cases, but it helps prevent flicker.
+        const currentBuffer = xtermRef.current.buffer.active.getLine(0)?.translateToString();
+        if (currentBuffer && !currentBuffer.includes(initialOutput.split('\n')[0])) {
+          xtermRef.current.clear();
+          xtermRef.current.write(initialOutput.replace(/\n/g, '\r\n'));
+          xtermRef.current.write('\r\n$ ');
         }
     }
-  }, [initialOutput])
+  }, [initialOutput]);
 
   return <div className="absolute inset-0" ref={terminalRef} />;
 }
