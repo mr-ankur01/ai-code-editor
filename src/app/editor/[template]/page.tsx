@@ -142,7 +142,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
     setIsExecuting(true);
     const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
-    setTerminalOutput(`> Running ${fileName}...\n`);
+    setTerminalOutput(\`> Running \${fileName}...\n\`);
 
     try {
       const result = await simulateCodeExecution({ code, language });
@@ -165,7 +165,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
     if (template === 'web') {
         content = getActiveWebEditorCode();
-        filename = `index.${activeWebLanguage}`;
+        filename = `index.\${activeWebLanguage}\`;
     } else {
         content = code;
         const extension = {
@@ -175,7 +175,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             go: 'go',
             csharp: 'cs'
         }[template || ''] || 'txt';
-        filename = `${template || 'code'}.${extension}`;
+        filename = `\${template || 'code'}.\${extension}\`;
     }
 
     const blob = new Blob([content], { type: 'text/plain' });
