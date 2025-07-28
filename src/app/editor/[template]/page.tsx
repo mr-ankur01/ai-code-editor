@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
 import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
-import { simulateCodeExecutionStream } from '@/ai/flows/simulate-code-execution-stream';
+import { executeCodeWithJudge0 } from '@/ai/flows/execute-code-with-judge0';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 
@@ -141,57 +141,69 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     }
 
     setIsExecuting(true);
-    const fileName = `main.${{python: 'py', go: 'go', java: 'java', csharp: 'cs', javascript: 'js'}[language] || 'js'}`;
+    setTerminalStream({ content: '', key: Date.now() });
 
     if (language === 'javascript') {
         const output: string[] = [];
         const originalLog = console.log;
         const originalError = console.error;
+        let finalOutput = '';
 
         console.log = (...args) => {
-            output.push(args.map(arg => typeof arg === 'string' ? arg : JSON.stringify(arg)).join(' '));
+            const message = args.map(arg => typeof arg === 'string' ? arg : JSON.stringify(arg)).join(' ');
+            output.push(message);
+            finalOutput = output.join('\n');
+            setTerminalStream({ content: finalOutput, key: Date.now() });
         };
         console.error = (...args) => {
-            output.push(`Error: ${args.map(arg => arg instanceof Error ? arg.message : String(arg)).join(' ')}`);
+            const message = `Error: ${args.map(arg => arg instanceof Error ? arg.message : String(arg)).join(' ')}`;
+            output.push(message);
+            finalOutput = output.join('\n');
+            setTerminalStream({ content: finalOutput, key: Date.now() });
         };
 
         try {
             new Function(code)();
         } catch (e: any) {
             output.push(`Error: ${e.message}`);
+            finalOutput = output.join('\n');
+            setTerminalStream({ content: finalOutput, key: Date.now() });
         } finally {
             console.log = originalLog;
             console.error = originalError;
-            setTerminalStream({ content: output.join('\n'), key: Date.now() });
             setIsExecuting(false);
         }
         return;
     }
     
-    setTerminalStream({ content: `> Running ${fileName}...\n`, key: Date.now() });
-
     try {
-        simulateCodeExecutionStream({ code, language }, (chunk) => {
-            setTerminalStream(prev => ({ content: (prev?.content || '') + chunk, key: prev?.key || Date.now() }));
-        }).catch(error => {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            toast({
-                variant: 'destructive',
-                title: 'Execution Error',
-                description: 'The AI failed to simulate the code execution.',
-            });
-            setTerminalStream(prev => ({ content: (prev?.content || '') + `\nError: ${errorMessage}`, key: prev?.key || Date.now() }));
-        }).finally(() => {
-            setIsExecuting(false);
-        });
+      setTerminalStream({ content: `> Executing with Judge0...\n`, key: Date.now() });
+      const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
+
+      let executionOutput = result.stdout || '';
+      if (result.stderr) {
+        executionOutput += `\nStderr:\n${result.stderr}`;
+      }
+      if (result.compile_output) {
+        executionOutput += `\nCompile Output:\n${result.compile_output}`;
+      }
+      if (result.message) {
+        executionOutput += `\nMessage:\n${result.message}`;
+      }
+      if (result.status?.description) {
+        executionOutput += `\nStatus: ${result.status.description}`;
+      }
+      
+      setTerminalStream(prev => ({ content: (prev?.content || '') + executionOutput, key: prev?.key || Date.now() }));
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         toast({
             variant: 'destructive',
             title: 'Execution Error',
-            description: 'The AI failed to simulate the code execution.',
+            description: errorMessage,
         });
         setTerminalStream(prev => ({ content: (prev?.content || '') + `\nError: ${errorMessage}`, key: prev?.key || Date.now() }));
+    } finally {
         setIsExecuting(false);
     }
   };
