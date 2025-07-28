@@ -2,9 +2,6 @@
 'use client';
 import 'xterm/css/xterm.css';
 import React, { useEffect, useRef } from 'react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
 
 interface RawTerminalProps {
   initialOutput?: string;
@@ -13,101 +10,120 @@ interface RawTerminalProps {
 
 export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
-  const xtermRef = useRef<Terminal | null>(null);
+  const xtermRef = useRef<any | null>(null);
   const commandRef = useRef<string>('');
+  const fitAddonRef = useRef<any | null>(null);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (!terminalRef.current || xtermRef.current) {
+    if (!terminalRef.current || isInitialized.current) {
       return;
     }
-
-    const term = new Terminal({
-      cursorBlink: true,
-      convertEol: true,
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-      fontSize: 14,
-      theme: {
-        background: 'hsl(var(--card))',
-        foreground: 'hsl(var(--foreground))',
-        cursor: 'hsl(var(--foreground))',
-      },
-    });
-
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
-    term.loadAddon(new WebLinksAddon());
     
-    term.open(terminalRef.current);
-    
-    const safeFit = () => {
-      // Ensure the terminal's container is rendered and visible before fitting
-      if (terminalRef.current && terminalRef.current.clientHeight > 0 && terminalRef.current.clientWidth > 0) {
-        try {
-          fitAddon.fit();
-        } catch (e) {
-          console.error("Failed to fit terminal:", e);
+    // Dynamically import xterm and its addons
+    const initTerminal = async () => {
+        const { Terminal } = await import('xterm');
+        const { FitAddon } = await import('xterm-addon-fit');
+        const { WebLinksAddon } = await import('xterm-addon-web-links');
+
+        const term = new Terminal({
+          cursorBlink: true,
+          convertEol: true,
+          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+          fontSize: 14,
+          theme: {
+            background: 'hsl(var(--card))',
+            foreground: 'hsl(var(--foreground))',
+            cursor: 'hsl(var(--foreground))',
+          },
+        });
+        
+        const fitAddon = new FitAddon();
+        fitAddonRef.current = fitAddon;
+        
+        term.loadAddon(fitAddon);
+        term.loadAddon(new WebLinksAddon());
+        
+        term.open(terminalRef.current!);
+        
+        const safeFit = () => {
+          if (terminalRef.current && terminalRef.current.clientHeight > 0 && terminalRef.current.clientWidth > 0) {
+            try {
+              fitAddon.fit();
+            } catch (e) {
+              console.error("Failed to fit terminal:", e);
+            }
+          }
+        };
+
+        setTimeout(safeFit, 1);
+        
+        xtermRef.current = term;
+        isInitialized.current = true;
+
+        if (initialOutput) {
+            term.write(initialOutput.replace(/\n/g, '\r\n'));
         }
-      }
-    };
-    
-    // Delay fit to ensure the terminal is fully rendered
-    setTimeout(safeFit, 1);
 
-    xtermRef.current = term;
-    
-    // Display initial output if any
-    if (initialOutput) {
-        term.write(initialOutput.replace(/\n/g, '\r\n'));
+        const prompt = () => {
+          commandRef.current = '';
+          term.write('\r\n$ ');
+        };
+        prompt();
+
+        term.onKey(({ key, domEvent }) => {
+          const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
+
+          if (domEvent.keyCode === 13) { // Enter
+            term.write('\r\n');
+            if (onCommand && commandRef.current) {
+              onCommand(commandRef.current);
+            } else {
+              term.write(`command not found: ${commandRef.current}`);
+            }
+            prompt();
+          } else if (domEvent.keyCode === 8) { // Backspace
+            if (commandRef.current.length > 0) {
+              term.write('\b \b');
+              commandRef.current = commandRef.current.slice(0, -1);
+            }
+          } else if (printable) {
+            commandRef.current += key;
+            term.write(key);
+          }
+        });
     }
 
-    const prompt = () => {
-      commandRef.current = '';
-      term.write('\r\n$ ');
-    };
-
-    prompt();
-
-    term.onKey(({ key, domEvent }) => {
-      const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
-
-      if (domEvent.keyCode === 13) { // Enter
-        term.write('\r\n');
-        if (onCommand && commandRef.current) {
-          onCommand(commandRef.current);
-        } else {
-          // Echo for now
-          term.write(`command not found: ${commandRef.current}`);
-        }
-        prompt();
-      } else if (domEvent.keyCode === 8) { // Backspace
-        if (commandRef.current.length > 0) {
-          term.write('\b \b');
-          commandRef.current = commandRef.current.slice(0, -1);
-        }
-      } else if (printable) {
-        commandRef.current += key;
-        term.write(key);
-      }
-    });
+    initTerminal();
     
     const handleResize = () => {
-        safeFit();
+        if (fitAddonRef.current) {
+            if (terminalRef.current && terminalRef.current.clientHeight > 0 && terminalRef.current.clientWidth > 0) {
+              try {
+                fitAddonRef.current.fit();
+              } catch (e) {
+                console.error("Failed to fit terminal:", e);
+              }
+            }
+        }
     };
-
+    
     window.addEventListener('resize', handleResize);
-
+    
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
-      term.dispose();
-      xtermRef.current = null;
+      if (xtermRef.current) {
+        xtermRef.current.dispose();
+        xtermRef.current = null;
+      }
+      isInitialized.current = false;
     };
-  }, [initialOutput, onCommand]);
-  
+  }, []); // Run only once on mount
+
   // Handle external output changes
   useEffect(() => {
     if (xtermRef.current && initialOutput) {
-        // A bit of a hack to check if this is the first output
         if(!xtermRef.current.getBuffer().active.getLine(0)?.isWrapped) {
             xtermRef.current.clear();
             xtermRef.current.write(initialOutput.replace(/\n/g, '\r\n'));
