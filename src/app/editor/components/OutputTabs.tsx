@@ -1,5 +1,5 @@
 import { TerminalSquare } from 'lucide-react';
-import { Terminal } from './Terminal';
+import { RawTerminal } from './RawTerminal';
 
 interface OutputTabsProps {
   terminalOutput: string;
@@ -15,7 +15,7 @@ export function OutputTabs({ terminalOutput }: OutputTabsProps) {
           </div>
         </div>
       <div className="flex-grow p-2">
-         <Terminal output={terminalOutput} />
+         <RawTerminal initialOutput={terminalOutput} />
       </div>
     </div>
   );
