@@ -14,6 +14,7 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
   const commandRef = useRef<string>('');
   const fitAddonRef = useRef<any | null>(null);
   const isInitialized = useRef(false);
+  const lastOutput = useRef('');
 
   useEffect(() => {
     if (!terminalRef.current || isInitialized.current) {
@@ -64,23 +65,27 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
 
         if (initialOutput) {
             term.write(initialOutput.replace(/\n/g, '\r\n'));
+            lastOutput.current = initialOutput;
         }
 
         const prompt = () => {
           commandRef.current = '';
           term.write('\r\n$ ');
         };
-        prompt();
+        
+        if (!initialOutput) {
+          prompt();
+        }
+
 
         term.onKey(({ key, domEvent }: { key: string, domEvent: KeyboardEvent }) => {
           const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
 
           if (domEvent.keyCode === 13) { // Enter
-            term.write('\r\n');
             if (onCommand && commandRef.current) {
               onCommand(commandRef.current);
             } else {
-              term.write(`command not found: ${commandRef.current}`);
+              term.write(`\r\ncommand not found: ${commandRef.current}`);
             }
             prompt();
           } else if (domEvent.keyCode === 8) { // Backspace
@@ -126,15 +131,9 @@ export function RawTerminal({ initialOutput, onCommand }: RawTerminalProps) {
 
   // Handle external output changes
   useEffect(() => {
-    if (xtermRef.current && initialOutput) {
-        // This check is to prevent clearing and rewriting the terminal if the output is the same.
-        // It's a simple check and might not cover all cases, but it helps prevent flicker.
-        const currentBuffer = xtermRef.current.buffer.active.getLine(0)?.translateToString();
-        if (currentBuffer && !currentBuffer.includes(initialOutput.split('\n')[0])) {
-          xtermRef.current.clear();
-          xtermRef.current.write(initialOutput.replace(/\n/g, '\r\n'));
-          xtermRef.current.write('\r\n$ ');
-        }
+    if (xtermRef.current && initialOutput && initialOutput !== lastOutput.current) {
+        xtermRef.current.write(initialOutput.replace(lastOutput.current, '').replace(/\n/g, '\r\n'));
+        lastOutput.current = initialOutput;
     }
   }, [initialOutput]);
 
