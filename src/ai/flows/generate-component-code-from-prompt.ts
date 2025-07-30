@@ -35,6 +35,11 @@ const prompt = ai.definePrompt({
 
   - For React, the main file is 'App.js'. You don't need an entry point or HTML. **Do not include any CSS imports like 'import ./App.css'. Use inline styles for all styling.**
   - For Vue, provide 'index.js' for the entry point and a basic 'index.html' with an <div id="app"></div>. The main component logic should be in 'index.js'.
+  - **CRITICAL for Vue**: When creating the template string in JavaScript, you MUST NOT nest JavaScript template literals inside the string. For example:
+    - **WRONG**: \`<p>$\{v-bind:product.price}</p>\`
+    - **WRONG**: \`<p>$\{ { product.price } }</p>\`
+    - **CORRECT**: \`<p>$\{{ product.price }}</p>\`
+    - The dollar sign must be outside the Vue interpolation curly braces.
   - The component should be self-contained and complete.
   - Be as complete as possible, including imports.
 
