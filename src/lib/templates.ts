@@ -6,18 +6,14 @@ export const templates = {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>To-Do List</title>
+  <title>Click Counter</title>
 </head>
 <body>
   <div class="container">
-    <h1>My To-Do List</h1>
-    <div class="input-container">
-      <input type="text" id="todo-input" placeholder="Add a new task...">
-      <button id="add-task-btn">Add</button>
-    </div>
-    <ul id="task-list">
-      <!-- Tasks will be added here -->
-    </ul>
+    <h1>Colorful Counter</h1>
+    <p>Click the button to increase the count and change the color.</p>
+    <div id="counter-display">0</div>
+    <button id="click-btn">Click Me!</button>
   </div>
 </body>
 </html>`,
@@ -25,17 +21,15 @@ export const templates = {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
   margin: 0;
-  padding-top: 4rem;
   background-color: #f0f2f5;
   color: #333;
+  text-align: center;
 }
 
 .container {
-  width: 100%;
-  max-width: 400px;
   padding: 2rem;
   background-color: white;
   border-radius: 12px;
@@ -43,140 +37,59 @@ export const templates = {
 }
 
 h1 {
-  text-align: center;
   color: #1c1e21;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.input-container {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+p {
+  color: #666;
+  margin-bottom: 2rem;
 }
 
-#todo-input {
-  flex-grow: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
+#counter-display {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #333;
+  transition: color 0.3s ease;
 }
 
-#add-task-btn {
-  padding: 0.75rem 1.25rem;
+#click-btn {
+  padding: 1rem 2rem;
   border: none;
   border-radius: 8px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-#add-task-btn:hover {
+#click-btn:hover {
   background-color: #0056b3;
 }
 
-#task-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.task-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
-}
-
-.task-item:last-child {
-  border-bottom: none;
-}
-
-.task-item.completed span {
-  text-decoration: line-through;
-  color: #aaa;
-}
-
-.task-item:hover {
-  background-color: #f9f9f9;
-}
-
-.task-item button {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 4px;
-  background-color: #dc3545;
-  color: white;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.task-item:hover button {
-  opacity: 1;
+#click-btn:active {
+  transform: scale(0.98);
 }`,
     js: `document.addEventListener('DOMContentLoaded', () => {
-  const taskInput = document.getElementById('todo-input');
-  const addTaskBtn = document.getElementById('add-task-btn');
-  const taskList = document.getElementById('task-list');
+  const counterDisplay = document.getElementById('counter-display');
+  const clickBtn = document.getElementById('click-btn');
 
-  // Function to add a new task
-  const addTask = () => {
-    const taskText = taskInput.value.trim();
-    if (taskText === '') {
-      alert('Please enter a task!');
-      return;
-    }
+  let count = 0;
+  const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+  let colorIndex = 0;
 
-    // Create list item
-    const li = document.createElement('li');
-    li.className = 'task-item';
+  clickBtn.addEventListener('click', () => {
+    // Increment count
+    count++;
+    counterDisplay.textContent = count;
 
-    // Create span for task text
-    const taskSpan = document.createElement('span');
-    taskSpan.textContent = taskText;
-    li.appendChild(taskSpan);
-
-    // Create delete button
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.onclick = () => {
-      taskList.removeChild(li);
-    };
-    li.appendChild(deleteBtn);
-    
-    // Add click event to toggle completion
-    li.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'BUTTON') {
-            li.classList.toggle('completed');
-        }
-    });
-
-    taskList.appendChild(li);
-    taskInput.value = '';
-    taskInput.focus();
-  };
-
-  // Event Listeners
-  addTaskBtn.addEventListener('click', addTask);
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      addTask();
-    }
+    // Change color
+    colorIndex = (colorIndex + 1) % colors.length;
+    counterDisplay.style.color = colors[colorIndex];
   });
-
-  // Add a few initial tasks for demonstration
-  const initialTasks = ['Learn HTML', 'Learn CSS', 'Learn JavaScript'];
-  initialTasks.forEach(task => {
-      taskInput.value = task;
-      addTask();
-  });
-
 });`,
   },
   python: `# Welcome to CodeX!
