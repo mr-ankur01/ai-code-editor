@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview, useSandpack } from '@codesandbox/sandpack-react';
 import { useTheme } from 'next-themes';
+import { WebEditor } from '../components/WebEditor';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -191,7 +192,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
       const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
 
-      let executionOutput = initialMessage;
+      let executionOutput = '';
       executionOutput += result.stdout || '';
       if (result.stderr) {
         executionOutput += `\nStderr:\n${result.stderr}`;
@@ -203,7 +204,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         executionOutput += `\nMessage:\n${result.message}`;
       }
       
-      setTerminalStream({ content: executionOutput, key: Date.now() });
+      setTerminalStream({ content: initialMessage + executionOutput, key: Date.now() });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         toast({
