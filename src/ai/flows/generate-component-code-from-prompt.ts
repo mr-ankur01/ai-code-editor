@@ -4,7 +4,7 @@
  *
  * - generateComponentCode - A function that generates component code based on a prompt.
  * - GenerateComponentCodeInput - The input type for the function.
- * - GenerateComponentCodeOutput - The return type for the function.
+ * - GenerateComponentCode-Output - The return type for the function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
     - The dollar sign must be outside the Vue interpolation curly braces.
   - The component should be self-contained and complete.
   - Be as complete as possible, including imports.
-  - For any placeholder images, you MUST use one of the following services: https://picsum.photos/, https://api.pexels.com/, https://res.cloudinary.com/, or https://assets.imgix.net/.
+  - For any placeholder images, you MUST use the following service: https://picsum.photos/.
   - If the prompt is related to e-commerce, you MUST use one of the following dummy APIs for product data: 'https://dummyjson.com/products', 'https://fakestoreapiserver.reactbd.org/api/products', or 'https://fakestoreapi.com/products'. When using these APIs, you MUST use the image URLs provided in the API response for product images and NOT use a placeholder service.
 
   Prompt: {{{prompt}}}`,
