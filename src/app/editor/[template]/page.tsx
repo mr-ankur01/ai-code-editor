@@ -288,8 +288,12 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         };
       case 'vue':
         return {
-          template: 'vue3' as const,
-          files: { '/src/App.vue': code },
+          template: 'vanilla' as const,
+          files: { 
+            '/App.vue': code,
+            '/index.js': `import { createApp } from 'vue';\nimport App from './App.vue';\n\ncreateApp(App).mount('#app');`,
+            '/index.html': `<div id="app"></div>`,
+           },
            customSetup: {
             dependencies: { 'vue': 'latest' }
           }
@@ -312,6 +316,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   files={sandpackConfig.files}
                   theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                   onActiveFileChange={path => setCode(sandpackConfig.files[path] || '')}
+                  customSetup={sandpackConfig.customSetup}
                 >
                   <SandpackLayout className="w-full h-full border-0 rounded-lg overflow-hidden">
                     <SandpackCodeEditor 
