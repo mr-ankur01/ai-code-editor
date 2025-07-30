@@ -8,12 +8,11 @@ import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Play, Monitor, RefreshCw, Loader, Download } from 'lucide-react';
-import { WebEditor } from '../components/WebEditor';
 import { Sandbox } from '../components/Sandbox';
 import { executeCodeWithJudge0 } from '@/ai/flows/execute-code-with-judge0';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
-import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } from '@codesandbox/sandpack-react';
+import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview, useSandpack } from '@codesandbox/sandpack-react';
 import { useTheme } from 'next-themes';
 
 type WebLanguage = 'html' | 'css' | 'js';
@@ -315,13 +314,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   template={sandpackConfig.template}
                   files={sandpackConfig.files}
                   theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                  onActiveFileChange={path => setCode(sandpackConfig.files[path] || '')}
+                  onActiveFileChange={(path) => {
+                    // Sandpack's files are read-only, so we get the updated code from the editor instance if needed
+                  }}
                   customSetup={sandpackConfig.customSetup}
                 >
                   <SandpackLayout className="w-full h-full border-0 rounded-lg overflow-hidden">
                     <SandpackCodeEditor 
                       showTabs
-                      onCodeUpdate={newCode => setCode(newCode)}
                     />
                     <SandpackPreview 
                       showRefreshButton
