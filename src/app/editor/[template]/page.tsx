@@ -358,19 +358,23 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                           <span className="text-sm font-medium text-muted-foreground capitalize">{template} Output</span>
                       </div>
                   </div>
-                  <div className="flex-grow">
+                  <div className="flex-grow relative">
                       <SandpackProvider
                         key={refreshKey}
                         template={sandpackConfig.template}
                         files={sandpackConfig.files}
                         theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                         customSetup={sandpackConfig.customSetup}
-                        options={{ autorun: true, autoadjustHeight: false }}
+                        options={{ autorun: true, autoadjustHeight: false,
+                          externalResources: ["https://cdn.tailwindcss.com"],
+                         }}
                       >
-                        <SandpackPreview 
-                          showRefreshButton={false}
-                          showOpenInCodeSandbox={false}
-                        />
+                        <SandpackLayout style={{ height: '100%', border: 0, borderRadius: 0 }}>
+                          <SandpackPreview 
+                            showRefreshButton={false}
+                            showOpenInCodeSandbox={false}
+                          />
+                        </SandpackLayout>
                       </SandpackProvider>
                   </div>
                 </div>
@@ -535,3 +539,4 @@ function EditorPageSkeleton() {
     
 
     
+
