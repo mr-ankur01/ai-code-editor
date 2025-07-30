@@ -358,14 +358,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                           <span className="text-sm font-medium text-muted-foreground capitalize">{template} Output</span>
                       </div>
                   </div>
-                  <div className="flex-grow p-2 bg-white">
+                  <div className="flex-grow">
                       <SandpackProvider
                         key={refreshKey}
                         template={sandpackConfig.template}
                         files={sandpackConfig.files}
                         theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                         customSetup={sandpackConfig.customSetup}
-                        options={{ autorun: true, autoadjustHeight: true }}
+                        options={{ autorun: true, autoadjustHeight: false }}
                       >
                         <SandpackPreview 
                           showRefreshButton={false}
