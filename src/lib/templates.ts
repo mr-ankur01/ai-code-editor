@@ -161,7 +161,7 @@ export default function App() {
     </div>
   );
 }`,
-  vue: `import { createApp, ref } from 'vue';
+  vue: `import { createApp, ref, computed } from 'vue';
 
 const App = {
   setup() {
@@ -173,12 +173,13 @@ const App = {
       count.value++;
       colorIndex.value = (colorIndex.value + 1) % colors.length;
     };
+    
+    const currentColor = computed(() => colors[colorIndex.value]);
 
     return { 
       count,
-      colors,
-      colorIndex,
       increment,
+      currentColor
     };
   },
   template: \`
@@ -199,7 +200,7 @@ const App = {
         fontSize: '5rem',
         fontWeight: 'bold',
         margin: '1rem 0',
-        color: colors[colorIndex],
+        color: currentColor,
         transition: 'color 0.3s ease'
       }">
         {{ count }}
