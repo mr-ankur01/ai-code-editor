@@ -24,7 +24,7 @@ export const templates = {
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  background-color: #f0f2f5;
+  background-color: #e3f2fd;
   color: #333;
   text-align: center;
 }
