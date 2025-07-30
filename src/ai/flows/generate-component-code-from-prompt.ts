@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateComponentCodeOutputSchema},
   prompt: `You are an expert web developer specializing in {{framework}}. Based on the user's prompt, generate the code for a single file component and any necessary entrypoint/HTML files.
 
-  - For React, the main file is 'App.js'. You don't need an entry point or HTML.
+  - For React, the main file is 'App.js'. You don't need an entry point or HTML. **Do not include any CSS imports like 'import ./App.css'. Use inline styles for all styling.**
   - For Vue, provide 'index.js' for the entry point and a basic 'index.html' with an <div id="app"></div>. The main component logic should be in 'index.js'.
   - The component should be self-contained and complete.
   - Be as complete as possible, including imports.
