@@ -17,7 +17,7 @@ const GenerateComponentCodeInputSchema = z.object({
 export type GenerateComponentCodeInput = z.infer<typeof GenerateComponentCodeInputSchema>;
 
 const GenerateComponentCodeOutputSchema = z.object({
-  componentCode: z.string().describe('The main component code (e.g., App.js for React, App.vue for Vue).'),
+  componentCode: z.string().describe('The main component code (e.g., App.js for React, index.js for Vue).'),
   entryPointCode: z.string().optional().describe('The entry point code (e.g., main.js or index.js to mount the app).'),
   htmlCode: z.string().optional().describe('The HTML entry point (e.g., index.html).')
 });
