@@ -288,7 +288,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         };
       case 'vue':
         return {
-          template: 'vue3' as const,
+          template: 'vanilla' as const,
           files: { 
             '/index.js': code,
             '/index.html': `<div id="app"></div>`,
@@ -317,6 +317,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   files={sandpackConfig.files}
                   theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                    onActiveFileChange={(path) => {
+                    // @ts-ignore
                     const newCode = sandpackConfig.files[path];
                     if (newCode) {
                         setCode(newCode)
