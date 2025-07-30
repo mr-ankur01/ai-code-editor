@@ -17,8 +17,9 @@ import { useTheme } from 'next-themes';
 import { WebEditor } from '../components/WebEditor';
 
 type WebLanguage = 'html' | 'css' | 'js';
+type Template = keyof Omit<typeof templates, 'web'> | 'web' | null;
 
-function EditorView({ params: paramsPromise }: { params: Promise<{ template: keyof Omit<typeof templates, 'web'> | 'web' | null }> }) {
+function EditorView({ params: paramsPromise }: { params: Promise<{ template: Template }> }) {
   const params = use(paramsPromise);
   const { template } = params;
   const { toast } = useToast();
@@ -37,6 +38,9 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   const [js, setJs] = useState(templates.web.js);
   const [activeWebLanguage, setActiveWebLanguage] = useState<WebLanguage>('html');
 
+  // Sandpack state
+  const [sandpackFiles, setSandpackFiles] = useState<Record<string, string>>({});
+
   // Sandbox state
   const [refreshKey, setRefreshKey] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
@@ -48,35 +52,21 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   useEffect(() => {
     if (template && templates[template] && template !== 'web') {
       const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
-      setCode(templateContent);
-      switch (template) {
-        case 'python':
-          setLanguage('python');
-          break;
-        case 'javascript':
-            setCode(templates.javascript);
-            setLanguage('javascript');
-            break;
-        case 'react':
-            setCode(templates.react);
-            setLanguage('javascript');
-            break;
-        case 'vue':
-            setCode(templates.vue);
-            setLanguage('javascript');
-            break;
-        case 'java':
-            setCode(templates.java);
-            setLanguage('java');
-            break;
-        case 'go':
-            setCode(templates.go);
-            setLanguage('go');
-            break;
-        case 'csharp':
-            setCode(templates.csharp);
-            setLanguage('csharp');
-            break;
+      if (template === 'react') {
+        setSandpackFiles({ '/App.js': templates.react });
+        setLanguage('javascript');
+      } else if (template === 'vue') {
+        setSandpackFiles({ '/index.js': templates.vue, '/index.html': `<div id="app"></div>` });
+        setLanguage('javascript');
+      } else {
+        setCode(templateContent);
+        switch (template) {
+          case 'python': setLanguage('python'); break;
+          case 'javascript': setLanguage('javascript'); break;
+          case 'java': setLanguage('java'); break;
+          case 'go': setLanguage('go'); break;
+          case 'csharp': setLanguage('csharp'); break;
+        }
       }
     } else if (template === 'web') {
       setHtml(templates.web.html);
@@ -90,8 +80,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
   const sandboxedWebHtml = useMemo(() => {
     if (!isMounted) return '';
-    // We construct a full HTML document here to ensure proper rendering in the sandbox.
-    // The CSS is injected into a <style> tag and the JS into a <script> tag.
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -99,7 +87,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            /* Default styles to ensure visibility of content */
             body { 
               font-family: sans-serif;
               background-color: #ffffff;
@@ -131,7 +118,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         return model.getValueInRange(selection);
       }
     }
-    // TODO: Implement for multi-file editor
     return '';
   };
   
@@ -256,12 +242,22 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     if (language === 'js') setJs(newCode);
   };
   
-  const handleAIPanelCodeChange = (newCode: string | {html: string, css: string, js: string}) => {
+  const handleAIPanelCodeChange = (newCode: string | {html?: string, css?: string, js?: string, componentCode?: string, entryPointCode?: string, htmlCode?: string}) => {
       if(template === 'web' && typeof newCode === 'object' && 'html' in newCode) {
-        setHtml(newCode.html);
-        setCss(newCode.css);
-        setJs(newCode.js);
-      } else if (typeof newCode === 'string') {
+        setHtml(newCode.html || '');
+        setCss(newCode.css || '');
+        setJs(newCode.js || '');
+      } else if (template === 'react' && typeof newCode === 'object' && newCode.componentCode) {
+        setSandpackFiles({'/App.js': newCode.componentCode});
+      } else if (template === 'vue' && typeof newCode === 'object' && newCode.componentCode) {
+        const files: Record<string, string> = {};
+        files['/index.js'] = newCode.componentCode;
+        if(newCode.htmlCode) {
+          files['/index.html'] = newCode.htmlCode;
+        }
+        setSandpackFiles(files);
+      }
+      else if (typeof newCode === 'string') {
         setCode(newCode);
       }
   }
@@ -281,7 +277,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       case 'react':
         return {
           template: 'react' as const,
-          files: { '/App.js': code },
+          files: sandpackFiles,
           customSetup: {
             dependencies: { 'react': 'latest', 'react-dom': 'latest' }
           }
@@ -289,10 +285,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       case 'vue':
         return {
           template: 'vanilla' as const,
-          files: { 
-            '/index.js': code,
-            '/index.html': `<div id="app"></div>`,
-           },
+          files: sandpackFiles,
            customSetup: {
             dependencies: { 
               'vue': 'latest'
@@ -302,7 +295,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       default:
         return null;
     }
-  }, [template, code]);
+  }, [template, sandpackFiles]);
 
   if (template === 'react' || template === 'vue') {
      if (!sandpackConfig) return <EditorPageSkeleton />;
@@ -317,7 +310,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   files={sandpackConfig.files}
                   theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                    onActiveFileChange={(path) => {
-                    // @ts-ignore
                     const newCode = sandpackConfig.files[path];
                     if (newCode) {
                         setCode(newCode)
@@ -343,7 +335,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   editorCode={code}
                   setEditorCode={handleAIPanelCodeChange}
                   getSelectedText={() => ""}
-                  language={language}
+                  language={template}
                 />
             </SidebarContent>
           </Sidebar>
@@ -397,7 +389,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
               <AIPanel
                   editorCode={getActiveWebEditorCode()}
                   setEditorCode={handleAIPanelCodeChange}
-                  getSelectedText={() => ""} // TODO: Implement for multi-file editor
+                  getSelectedText={() => ""}
                   activeWebLanguage={activeWebLanguage}
                 />
             </SidebarContent>
@@ -466,7 +458,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 }
 
 export default function EditorPage({ params }: { params: { template: string }}) {
-  const promise = Promise.resolve(params);
+  const promise = Promise.resolve(params) as Promise<{ template: Template }>;
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
       <EditorView params={promise} />

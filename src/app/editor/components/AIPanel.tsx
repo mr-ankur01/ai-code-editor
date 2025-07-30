@@ -6,7 +6,7 @@ import { Bot, Sparkles, MessageSquare } from 'lucide-react';
 
 interface AIPanelProps {
   editorCode: string;
-  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: 'html' | 'css' | 'js') => void;
+  setEditorCode: (code: string | {html?: string, css?: string, js?: string, componentCode?: string, entryPointCode?: string, htmlCode?: string}) => void;
   getSelectedText: () => string;
   activeWebLanguage?: 'html' | 'css' | 'js';
   language?: string;

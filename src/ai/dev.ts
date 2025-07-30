@@ -7,3 +7,4 @@ import '@/ai/flows/generate-code-from-prompt.ts';
 import '@/ai/flows/generate-web-code-from-prompt.ts';
 import '@/ai/flows/simulate-code-execution.ts';
 import '@/ai/flows/execute-code-with-judge0.ts';
+import '@/ai/flows/generate-component-code-from-prompt.ts';

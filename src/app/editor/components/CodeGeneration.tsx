@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { generateCode } from '@/ai/flows/generate-code-from-prompt';
 import { generateWebCode } from '@/ai/flows/generate-web-code-from-prompt';
+import { generateComponentCode } from '@/ai/flows/generate-component-code-from-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Loader } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface CodeGenerationProps {
-  setEditorCode: (code: string | {html: string, css: string, js: string}, language?: string) => void;
+  setEditorCode: (code: string | {html?: string, css?: string, js?: string, componentCode?: string, entryPointCode?: string, htmlCode?: string}) => void;
   activeWebLanguage?: 'html' | 'css' | 'js';
   language?: string;
 }
@@ -33,7 +34,11 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage, language }: C
       if(activeWebLanguage) {
         const result = await generateWebCode({ prompt });
         setEditorCode(result);
-      } else {
+      } else if (language === 'react' || language === 'vue') {
+        const result = await generateComponentCode({ prompt, framework: language });
+        setEditorCode(result);
+      }
+      else {
         const result = await generateCode({ prompt, language });
         setEditorCode(result.code);
       }
@@ -58,6 +63,9 @@ export function CodeGeneration({ setEditorCode, activeWebLanguage, language }: C
     }
     if (language === 'vue') {
       return "e.g., 'A Vue component for a shopping cart'";
+    }
+    if (language === 'react') {
+      return "e.g., 'A React component for a user profile card'";
     }
     return `e.g., 'a ${language || 'javascript'} function to reverse a string'`;
   }
