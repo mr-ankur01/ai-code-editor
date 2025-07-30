@@ -177,7 +177,9 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     }
     
     try {
-      setTerminalStream({ content: `> Executing with Judge0...\n`, key: Date.now() });
+      const initialMessage = '> Executing with Judge0...\n';
+      setTerminalStream({ content: initialMessage, key: Date.now() });
+
       const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
 
       let executionOutput = result.stdout || '';
@@ -194,7 +196,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         executionOutput += `\nStatus: ${result.status.description}`;
       }
       
-      setTerminalStream(prev => ({ content: (prev?.content || '') + executionOutput, key: prev?.key || Date.now() }));
+      setTerminalStream(prev => ({ content: executionOutput, key: prev?.key || Date.now() }));
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         toast({
@@ -223,7 +225,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             java: 'java',
             go: 'go',
             csharp: 'cs'
-        }[template || ''] || 'txt';
+        }[language || ''] || 'txt';
         filename = `${template || 'code'}.${extension}`;
     }
 
