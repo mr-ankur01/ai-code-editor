@@ -143,7 +143,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
   };
   
   const handleRunCode = async () => {
-    if (template === 'web') { // React and Vue are handled by useEffect now
+    if (template === 'web') {
       setRefreshKey(prev => prev + 1);
       return;
     }
@@ -357,10 +357,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                           <Monitor className="w-4 h-4 mr-2" />
                           <span className="text-sm font-medium text-muted-foreground capitalize">{template} Output</span>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
-                        <RefreshCw className="w-4 h-4" />
-                        <span className="sr-only">Refresh</span>
-                      </Button>
                   </div>
                   <div className="flex-grow p-2 bg-white">
                       <SandpackProvider
