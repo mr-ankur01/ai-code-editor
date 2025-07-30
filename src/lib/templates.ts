@@ -113,21 +113,48 @@ greet("World");
 
 export default function App() {
   const [count, setCount] = useState(0);
+  const [colorIndex, setColorIndex] = useState(0);
+  const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+
+  const increment = () => {
+    setCount(prevCount => prevCount + 1);
+    setColorIndex(prevIndex => (prevIndex + 1) % colors.length);
+  };
 
   return (
-    <div style={{ fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem' }}>
-      <h1>React Counter</h1>
-      <p>You clicked {count} times</p>
+    <div style={{ 
+      fontFamily: 'sans-serif', 
+      textAlign: 'center', 
+      padding: '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#f0f4f8'
+    }}>
+      <h1>React Colorful Counter</h1>
+      <p>Click the button to count and change colors.</p>
+      <div style={{
+        fontSize: '5rem',
+        fontWeight: 'bold',
+        margin: '1rem 0',
+        color: colors[colorIndex],
+        transition: 'color 0.3s ease'
+      }}>
+        {count}
+      </div>
       <button 
         style={{ 
-          padding: '0.5rem 1rem',
-          fontSize: '1rem',
+          padding: '1rem 2rem',
+          fontSize: '1.2rem',
           cursor: 'pointer',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          backgroundColor: '#f0f0f0'
+          borderRadius: '8px',
+          border: 'none',
+          color: 'white',
+          backgroundColor: '#007bff'
         }}
-        onClick={() => setCount(count + 1)}
+        onClick={increment}
       >
         Click me
       </button>
@@ -138,19 +165,64 @@ export default function App() {
 
 const App = {
   setup() {
-    const msg = ref('Hello Vue!');
-    return { msg };
+    const count = ref(0);
+    const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+    const colorIndex = ref(0);
+
+    const increment = () => {
+      count.value++;
+      colorIndex.value = (colorIndex.value + 1) % colors.length;
+    };
+
+    return { 
+      count,
+      colors,
+      colorIndex,
+      increment,
+    };
   },
   template: \`
-    <div style="font-family: sans-serif; text-align: center; padding: 2rem;">
-      <h1>{{ msg }}</h1>
-      <input v-model="msg" style="padding: 0.5rem; font-size: 1rem; border-radius: 4px; border: 1px solid #ccc;" />
+    <div :style="{ 
+      fontFamily: 'sans-serif', 
+      textAlign: 'center', 
+      padding: '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#f0f4f8'
+    }">
+      <h1>Vue Colorful Counter</h1>
+      <p>Click the button to count and change colors.</p>
+      <div :style="{
+        fontSize: '5rem',
+        fontWeight: 'bold',
+        margin: '1rem 0',
+        color: colors[colorIndex],
+        transition: 'color 0.3s ease'
+      }">
+        {{ count }}
+      </div>
+      <button 
+        @click="increment"
+        :style="{ 
+          padding: '1rem 2rem',
+          fontSize: '1.2rem',
+          cursor: 'pointer',
+          borderRadius: '8px',
+          border: 'none',
+          color: 'white',
+          backgroundColor: '#007bff'
+        }"
+      >
+        Click me
+      </button>
     </div>
   \`
 };
 
-createApp(App).mount('#app');
-`,
+createApp(App).mount('#app');`,
   java: `// Welcome to CodeX!
 // Try asking the AI to 'write a method to find the largest number in an array'.
 
