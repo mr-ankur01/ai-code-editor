@@ -192,9 +192,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       if (result.message) {
         executionOutput += `\nMessage:\n${result.message}`;
       }
-      if (result.status?.description) {
-        executionOutput += `\nStatus: ${result.status.description}`;
-      }
       
       setTerminalStream(prev => ({ content: executionOutput, key: prev?.key || Date.now() }));
     } catch (error) {
