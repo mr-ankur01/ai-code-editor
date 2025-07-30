@@ -43,6 +43,7 @@ const prompt = ai.definePrompt({
   - The component should be self-contained and complete.
   - Be as complete as possible, including imports.
   - For any placeholder images, you MUST use one of the following services: https://picsum.photos/, https://api.pexels.com/, https://res.cloudinary.com/, or https://assets.imgix.net/.
+  - If the prompt is related to e-commerce, you MUST use one of the following dummy APIs for product data: 'https://dummyjson.com/products', 'https://fakestoreapiserver.reactbd.org/api/products', or 'https://fakestoreapi.com/products'. When using these APIs, you MUST use the image URLs provided in the API response for product images and NOT use a placeholder service.
 
   Prompt: {{{prompt}}}`,
 });
