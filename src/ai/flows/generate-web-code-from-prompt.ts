@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   - The HTML should be a complete document, starting with <!DOCTYPE html> and ending with </html>.
   - The CSS should be complete.
   - The JavaScript should be complete and manipulate the HTML. The user will inject it separately, so you do not need to add a <script> tag for it in the HTML.
-  - For any placeholder images, you MUST use 'https://placehold.co/<width>x<height>.png' (e.g., https://placehold.co/600x400.png). Do not add any text query parameters. Generate descriptive alt text. Do not use any other placeholder services like picsum.photos or unsplash.com.
+  - For any placeholder images, use an appropriate placeholder service and generate descriptive alt text.
   - If the prompt is related to e-commerce, you MUST use one of the following dummy APIs for product data: 'https://dummyjson.com/products', 'https://fakestoreapiserver.reactbd.org/api/products', or 'https://fakestoreapi.com/products'. When using these APIs, you MUST use the image URLs provided in the API response for product images and NOT use a placeholder service.
 
   Prompt: {{{prompt}}}`,
