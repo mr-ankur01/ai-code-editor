@@ -177,12 +177,13 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
     }
     
     try {
-      const initialMessage = '> Executing with Judge0...\n';
+      const initialMessage = '> Executing...\n';
       setTerminalStream({ content: initialMessage, key: Date.now() });
 
       const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
 
-      let executionOutput = result.stdout || '';
+      let executionOutput = initialMessage;
+      executionOutput += result.stdout || '';
       if (result.stderr) {
         executionOutput += `\nStderr:\n${result.stderr}`;
       }
@@ -193,7 +194,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         executionOutput += `\nMessage:\n${result.message}`;
       }
       
-      setTerminalStream(prev => ({ content: executionOutput, key: prev?.key || Date.now() }));
+      setTerminalStream({ content: executionOutput, key: Date.now() });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         toast({
