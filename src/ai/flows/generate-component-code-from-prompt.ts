@@ -42,6 +42,7 @@ const prompt = ai.definePrompt({
     - The dollar sign must be outside the Vue interpolation curly braces.
   - The component should be self-contained and complete.
   - Be as complete as possible, including imports.
+  - For any placeholder images, you MUST use one of the following services: https://picsum.photos/, https://api.pexels.com/, https://res.cloudinary.com/, or https://assets.imgix.net/.
 
   Prompt: {{{prompt}}}`,
 });
