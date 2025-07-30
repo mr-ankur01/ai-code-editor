@@ -53,11 +53,13 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
     if (template && templates[template] && template !== 'web') {
       const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
       if (template === 'react') {
-        setSandpackFiles({ '/App.js': templates.react });
+        const initialFiles = { '/App.js': templates.react };
+        setSandpackFiles(initialFiles);
         setCode(templates.react);
         setLanguage('javascript');
       } else if (template === 'vue') {
-        setSandpackFiles({ '/index.js': templates.vue, '/index.html': `<div id="app"></div>` });
+        const initialFiles = { '/index.js': templates.vue, '/index.html': `<div id="app"></div>` };
+        setSandpackFiles(initialFiles);
         setCode(templates.vue);
         setLanguage('javascript');
       } else {
@@ -79,6 +81,23 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
       setLanguage('javascript');
     }
   }, [template]);
+
+  // Effect to auto-run React/Vue code on change
+  useEffect(() => {
+    if (template === 'react') {
+      const timeoutId = setTimeout(() => {
+        setSandpackFiles({ '/App.js': code });
+      }, 500); // Debounce to avoid excessive updates
+      return () => clearTimeout(timeoutId);
+    }
+    if (template === 'vue') {
+       const timeoutId = setTimeout(() => {
+        setSandpackFiles(prev => ({...prev, '/index.js': code}));
+       }, 500); // Debounce to avoid excessive updates
+      return () => clearTimeout(timeoutId);
+    }
+  }, [code, template]);
+
 
   const sandboxedWebHtml = useMemo(() => {
     if (!isMounted) return '';
@@ -124,14 +143,8 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
   };
   
   const handleRunCode = async () => {
-    if (template === 'web' || template === 'react' || template === 'vue') {
+    if (template === 'web') { // React and Vue are handled by useEffect now
       setRefreshKey(prev => prev + 1);
-      if(template === 'react') {
-        setSandpackFiles({ '/App.js': code });
-      }
-      if(template === 'vue') {
-        setSandpackFiles(prev => ({...prev, '/index.js': code}));
-      }
       return;
     }
     
@@ -325,10 +338,6 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                         <Download className="w-4 h-4" />
                         <span className="sr-only">Download</span>
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={handleRunCode} disabled={isExecuting}>
-                        {isExecuting ? <Loader className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                        <span className="sr-only">Run</span>
-                      </Button>
                     </div>
                   </div>
                   <div className="relative flex-1">
@@ -360,6 +369,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                         files={sandpackConfig.files}
                         theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                         customSetup={sandpackConfig.customSetup}
+                        options={{ autorun: true, autoadjustHeight: true }}
                       >
                         <SandpackPreview 
                           showRefreshButton={false}
@@ -525,5 +535,7 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
 
     
