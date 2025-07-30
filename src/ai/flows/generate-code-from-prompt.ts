@@ -30,12 +30,11 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateCodeInputSchema},
   output: {schema: GenerateCodeOutputSchema},
   prompt: `You are an expert software developer{{#if language}} that specializes in generating code in {{language}}{{/if}}.
+{{#if language}}
+If the language is Java, the public class MUST be named "Main".
+{{/if}}
 
   Based on the prompt, generate the appropriate code. Be as complete as possible, including imports, functions, classes, etc.
-  
-  {{#if (eq language "java")}}
-  **CRITICAL**: The public class MUST be named "Main".
-  {{/if}}
 
   Prompt: {{{prompt}}}`,
 });
