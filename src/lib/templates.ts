@@ -134,41 +134,29 @@ export default function App() {
     </div>
   );
 }`,
-  vue: `<template>
-  <div :style="{ fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem' }">
-    <h1>{{ message }}</h1>
-    <button @click="changeMessage" :style="buttonStyle">Click Me</button>
-  </div>
+  vue: `<script setup>
+import { ref } from 'vue'
+
+const msg = ref('Hello World!')
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+  <input v-model="msg" />
 </template>
 
-<script>
-import { ref } from 'vue';
-
-export default {
-  setup() {
-    const message = ref('Hello Vue!');
-    
-    const changeMessage = () => {
-      message.value = 'You clicked the button!';
-    };
-
-    const buttonStyle = {
-      padding: '0.5rem 1rem',
-      fontSize: '1rem',
-      cursor: 'pointer',
-      borderRadius: '4px',
-      border: '1px solid #ccc',
-      backgroundColor: '#f0f0f0'
-    };
-
-    return {
-      message,
-      changeMessage,
-      buttonStyle
-    };
-  }
+<style>
+body {
+  background-color: #f0f0f0;
+  color: #333;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
-</script>`,
+</style>
+`,
   java: `// Welcome to CodeX!
 // Try asking the AI to 'write a method to find the largest number in an array'.
 

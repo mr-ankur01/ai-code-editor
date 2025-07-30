@@ -288,14 +288,15 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         };
       case 'vue':
         return {
-          template: 'vanilla' as const,
+          template: 'vue3-vite' as const,
           files: { 
-            '/App.vue': code,
-            '/index.js': `import { createApp } from 'vue';\nimport App from './App.vue';\n\ncreateApp(App).mount('#app');`,
-            '/index.html': `<div id="app"></div>`,
+            '/src/App.vue': code,
            },
            customSetup: {
-            dependencies: { 'vue': 'latest' }
+            dependencies: { 
+              'vue': 'latest',
+              '@vitejs/plugin-vue': 'latest'
+            }
           }
         };
       default:
@@ -315,8 +316,11 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                   template={sandpackConfig.template}
                   files={sandpackConfig.files}
                   theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                  onActiveFileChange={(path) => {
-                    // Sandpack's files are read-only, so we get the updated code from the editor instance if needed
+                   onActiveFileChange={(path) => {
+                    const newCode = sandpackConfig.files[path];
+                    if (newCode) {
+                        setCode(newCode)
+                    }
                   }}
                   customSetup={sandpackConfig.customSetup}
                 >
