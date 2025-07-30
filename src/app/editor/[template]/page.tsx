@@ -55,6 +55,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             setCode(templates.javascript);
             setLanguage('javascript');
             break;
+        case 'react':
+            setCode(templates.react);
+            setLanguage('javascript');
+            break;
+        case 'vue':
+            setCode(templates.vue);
+            setLanguage('javascript');
+            break;
         case 'java':
             setCode(templates.java);
             setLanguage('java');
@@ -182,8 +190,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
       const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
 
-      let executionOutput = initialMessage;
-      executionOutput += result.stdout || '';
+      let executionOutput = result.stdout || '';
       if (result.stderr) {
         executionOutput += `\nStderr:\n${result.stderr}`;
       }
@@ -222,7 +229,9 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             javascript: 'js',
             java: 'java',
             go: 'go',
-            csharp: 'cs'
+            csharp: 'cs',
+            react: 'jsx',
+            vue: 'vue',
         }[language || ''] || 'txt';
         filename = `${template || 'code'}.${extension}`;
     }
@@ -326,7 +335,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
                 <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                  {language}
+                  {template}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={handleDownloadCode}>

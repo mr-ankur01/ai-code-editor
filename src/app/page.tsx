@@ -38,6 +38,18 @@ export default function Home() {
               icon={<Code className="w-10 h-10 text-primary" />}
             />
             <TemplateCard
+              title="React"
+              description="Start with a simple React component."
+              href="/editor/react"
+              icon={<Code className="w-10 h-10 text-primary" />}
+            />
+             <TemplateCard
+              title="Vue"
+              description="Start with a simple Vue component."
+              href="/editor/vue"
+              icon={<Code className="w-10 h-10 text-primary" />}
+            />
+            <TemplateCard
               title="Java"
               description="A simple 'Hello, World!' in Java."
               href="/editor/java"

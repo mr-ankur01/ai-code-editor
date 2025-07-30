@@ -84,6 +84,43 @@ function greet(name) {
 
 greet("World");
 `,
+  react: `// Welcome to CodeX!
+// This is a simple React example.
+// Try asking the AI to 'create a counter component'.
+
+function App() {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div>
+      <h1>React Counter</h1>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+
+// You would typically render this with:
+// ReactDOM.render(<App />, document.getElementById('root'));
+console.log('React component defined. Run this in an environment with React and ReactDOM.');`,
+  vue: `// Welcome to CodeX!
+// This is a simple Vue example.
+// Try asking the AI to 'create a component with a message and a button'.
+
+const app = {
+  data() {
+    return {
+      message: 'Hello Vue!'
+    }
+  },
+  template: '<h1>{{ message }}</h1>'
+};
+
+// You would typically mount this with:
+// Vue.createApp(app).mount('#app');
+console.log('Vue component defined. Run this in an environment with Vue.');`,
   java: `// Welcome to CodeX!
 // Try asking the AI to 'write a method to find the largest number in an array'.
 
