@@ -370,8 +370,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
                          }}
                       >
                         <SandpackLayout style={{ height: '100%', border: 0, borderRadius: 0 }}>
-                          <SandpackPreview 
-                            showRefreshButton={false}
+                          <SandpackPreview
                             showOpenInCodeSandbox={false}
                           />
                         </SandpackLayout>
@@ -539,4 +538,5 @@ function EditorPageSkeleton() {
     
 
     
+
 
