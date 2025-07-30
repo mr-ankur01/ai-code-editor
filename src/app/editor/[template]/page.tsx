@@ -4,7 +4,6 @@ import { Suspense, useEffect, useMemo, useRef, useState, use } from 'react';
 import { Header } from '@/components/Header';
 import { Editor } from '../components/Editor';
 import { AIPanel } from '../components/AIPanel';
-import { OutputTabs } from '../components/OutputTabs';
 import { templates } from '@/lib/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,8 @@ import { Sandbox } from '../components/Sandbox';
 import { executeCodeWithJudge0 } from '@/ai/flows/execute-code-with-judge0';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } from '@codesandbox/sandpack-react';
+import { useTheme } from 'next-themes';
 
 type WebLanguage = 'html' | 'css' | 'js';
 
@@ -21,6 +22,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
   const params = use(paramsPromise);
   const { template } = params;
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
   
   // Single file editor state
   const [code, setCode] = useState('');
@@ -190,7 +192,8 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
 
       const result = await executeCodeWithJudge0({ source_code: code, language_id: language });
 
-      let executionOutput = result.stdout || '';
+      let executionOutput = initialMessage;
+      executionOutput += result.stdout || '';
       if (result.stderr) {
         executionOutput += `\nStderr:\n${result.stderr}`;
       }
@@ -270,6 +273,71 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
       case 'js': return js;
       default: return '';
     }
+  }
+
+  const sandpackConfig = useMemo(() => {
+    if (!template) return null;
+    switch (template) {
+      case 'react':
+        return {
+          template: 'react' as const,
+          files: { '/App.js': code },
+          customSetup: {
+            dependencies: { 'react': 'latest', 'react-dom': 'latest' }
+          }
+        };
+      case 'vue':
+        return {
+          template: 'vue3' as const,
+          files: { '/src/App.vue': code },
+           customSetup: {
+            dependencies: { 'vue': 'latest' }
+          }
+        };
+      default:
+        return null;
+    }
+  }, [template, code]);
+
+  if (template === 'react' || template === 'vue') {
+     if (!sandpackConfig) return <EditorPageSkeleton />;
+
+    return (
+      <SidebarProvider>
+          <SidebarInset>
+            <Header showBack={true} showSidebarToggle={true} />
+            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
+                <SandpackProvider
+                  template={sandpackConfig.template}
+                  files={sandpackConfig.files}
+                  theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                  onActiveFileChange={path => setCode(sandpackConfig.files[path] || '')}
+                >
+                  <SandpackLayout className="w-full h-full border-0 rounded-lg overflow-hidden">
+                    <SandpackCodeEditor 
+                      showTabs
+                      onCodeUpdate={newCode => setCode(newCode)}
+                    />
+                    <SandpackPreview 
+                      showRefreshButton
+                      showOpenInCodeSandbox={false}
+                    />
+                  </SandpackLayout>
+                </SandpackProvider>
+            </main>
+          </SidebarInset>
+          <Sidebar side="right" collapsible="offcanvas">
+            <SidebarContent>
+              <AIPanel
+                  editorCode={code}
+                  setEditorCode={handleAIPanelCodeChange}
+                  getSelectedText={() => ""}
+                  language={language}
+                />
+            </SidebarContent>
+          </Sidebar>
+      </SidebarProvider>
+    )
   }
 
   if (template === 'web') {
@@ -359,10 +427,16 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
                 </div>
               </div>
             </div>
-            <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden p-2">
-              <OutputTabs 
-                streamingOutput={terminalStream}
-              />
+            <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+                <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50 shrink-0">
+                    <div className="flex items-center">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        <span className="text-sm font-medium text-muted-foreground">Output</span>
+                    </div>
+                </div>
+                <div className="flex-grow p-2">
+                    <pre className="w-full h-full overflow-auto text-sm p-2 bg-background rounded-md">{terminalStream?.content}</pre>
+                </div>
             </div>
           </main>
       </SidebarInset>

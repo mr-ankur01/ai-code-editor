@@ -84,43 +84,66 @@ function greet(name) {
 
 greet("World");
 `,
-  react: `// Welcome to CodeX!
-// This is a simple React example.
-// Try asking the AI to 'create a counter component'.
+  react: `import React, { useState } from 'react';
 
-function App() {
-  const [count, setCount] = React.useState(0);
+export default function App() {
+  const [count, setCount] = useState(0);
 
   return (
-    <div>
+    <div style={{ fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem' }}>
       <h1>React Counter</h1>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
+      <button 
+        style={{ 
+          padding: '0.5rem 1rem',
+          fontSize: '1rem',
+          cursor: 'pointer',
+          borderRadius: '4px',
+          border: '1px solid #ccc',
+          backgroundColor: '#f0f0f0'
+        }}
+        onClick={() => setCount(count + 1)}
+      >
         Click me
       </button>
     </div>
   );
-}
+}`,
+  vue: `<template>
+  <div :style="{ fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem' }">
+    <h1>{{ message }}</h1>
+    <button @click="changeMessage" :style="buttonStyle">Click Me</button>
+  </div>
+</template>
 
-// You would typically render this with:
-// ReactDOM.render(<App />, document.getElementById('root'));
-console.log('React component defined. Run this in an environment with React and ReactDOM.');`,
-  vue: `// Welcome to CodeX!
-// This is a simple Vue example.
-// Try asking the AI to 'create a component with a message and a button'.
+<script>
+import { ref } from 'vue';
 
-const app = {
-  data() {
+export default {
+  setup() {
+    const message = ref('Hello Vue!');
+    
+    const changeMessage = () => {
+      message.value = 'You clicked the button!';
+    };
+
+    const buttonStyle = {
+      padding: '0.5rem 1rem',
+      fontSize: '1rem',
+      cursor: 'pointer',
+      borderRadius: '4px',
+      border: '1px solid #ccc',
+      backgroundColor: '#f0f0f0'
+    };
+
     return {
-      message: 'Hello Vue!'
-    }
-  },
-  template: '<h1>{{ message }}</h1>'
-};
-
-// You would typically mount this with:
-// Vue.createApp(app).mount('#app');
-console.log('Vue component defined. Run this in an environment with Vue.');`,
+      message,
+      changeMessage,
+      buttonStyle
+    };
+  }
+}
+</script>`,
   java: `// Welcome to CodeX!
 // Try asking the AI to 'write a method to find the largest number in an array'.
 
