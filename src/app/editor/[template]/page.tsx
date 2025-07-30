@@ -54,9 +54,11 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
       const templateContent = templates[template as keyof Omit<typeof templates, 'web'>];
       if (template === 'react') {
         setSandpackFiles({ '/App.js': templates.react });
+        setCode(templates.react);
         setLanguage('javascript');
       } else if (template === 'vue') {
         setSandpackFiles({ '/index.js': templates.vue, '/index.html': `<div id="app"></div>` });
+        setCode(templates.vue);
         setLanguage('javascript');
       } else {
         setCode(templateContent);
@@ -122,8 +124,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
   };
   
   const handleRunCode = async () => {
-    if (template === 'web') {
+    if (template === 'web' || template === 'react' || template === 'vue') {
       setRefreshKey(prev => prev + 1);
+      if(template === 'react') {
+        setSandpackFiles({ '/App.js': code });
+      }
+      if(template === 'vue') {
+        setSandpackFiles(prev => ({...prev, '/index.js': code}));
+      }
       return;
     }
     
@@ -220,7 +228,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
             go: 'go',
             csharp: 'cs',
             react: 'jsx',
-            vue: 'vue',
+            vue: 'js',
         }[language || ''] || 'txt';
         filename = `${template || 'code'}.${extension}`;
     }
@@ -248,9 +256,11 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
         setCss(newCode.css || '');
         setJs(newCode.js || '');
       } else if (template === 'react' && typeof newCode === 'object' && newCode.componentCode) {
+        setCode(newCode.componentCode);
         setSandpackFiles({'/App.js': newCode.componentCode});
       } else if (template === 'vue' && typeof newCode === 'object' && newCode.componentCode) {
-        const files: Record<string, string> = {};
+        setCode(newCode.componentCode);
+        const files: Record<string, string> = { '/index.html': `<div id="app"></div>`};
         files['/index.js'] = newCode.componentCode;
         if(newCode.htmlCode) {
           files['/index.html'] = newCode.htmlCode;
@@ -298,35 +308,66 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
   }, [template, sandpackFiles]);
 
   if (template === 'react' || template === 'vue') {
-     if (!sandpackConfig) return <EditorPageSkeleton />;
+    if (!sandpackConfig) return <EditorPageSkeleton />;
 
     return (
       <SidebarProvider>
           <SidebarInset>
             <Header showBack={true} showSidebarToggle={true} />
-            <main className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-2 h-[calc(100vh-4rem)] p-2">
-                <SandpackProvider
-                  template={sandpackConfig.template}
-                  files={sandpackConfig.files}
-                  theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                   onActiveFileChange={(path) => {
-                    const newCode = sandpackConfig.files[path];
-                    if (newCode) {
-                        setCode(newCode)
-                    }
-                  }}
-                  customSetup={sandpackConfig.customSetup}
-                >
-                  <SandpackLayout className="w-full h-full border-0 rounded-lg overflow-hidden">
-                    <SandpackCodeEditor 
-                      showTabs
-                    />
-                    <SandpackPreview 
-                      showRefreshButton
-                      showOpenInCodeSandbox={false}
-                    />
-                  </SandpackLayout>
-                </SandpackProvider>
+            <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
+                <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
+                  <div className="flex items-center justify-between p-2 border-b">
+                    <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md capitalize">
+                      {template}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="icon" onClick={handleDownloadCode}>
+                        <Download className="w-4 h-4" />
+                        <span className="sr-only">Download</span>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={handleRunCode} disabled={isExecuting}>
+                        {isExecuting ? <Loader className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                        <span className="sr-only">Run</span>
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="relative flex-1">
+                    <div className="absolute inset-0">
+                      <Editor
+                        ref={editorRef}
+                        code={code}
+                        setCode={setCode}
+                        language={language}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-[300px] min-h-[200px] rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+                  <div className="flex h-10 items-center justify-between px-3 border-b bg-muted/50 shrink-0">
+                      <div className="flex items-center">
+                          <Monitor className="w-4 h-4 mr-2" />
+                          <span className="text-sm font-medium text-muted-foreground capitalize">{template} Output</span>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => setRefreshKey(k => k + 1)}>
+                        <RefreshCw className="w-4 h-4" />
+                        <span className="sr-only">Refresh</span>
+                      </Button>
+                  </div>
+                  <div className="flex-grow p-2 bg-white">
+                      <SandpackProvider
+                        key={refreshKey}
+                        template={sandpackConfig.template}
+                        files={sandpackConfig.files}
+                        theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                        customSetup={sandpackConfig.customSetup}
+                      >
+                        <SandpackPreview 
+                          showRefreshButton={false}
+                          showOpenInCodeSandbox={false}
+                        />
+                      </SandpackProvider>
+                  </div>
+                </div>
             </main>
           </SidebarInset>
           <Sidebar side="right" collapsible="offcanvas">
@@ -334,7 +375,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
               <AIPanel
                   editorCode={code}
                   setEditorCode={handleAIPanelCodeChange}
-                  getSelectedText={() => ""}
+                  getSelectedText={getSelectedText}
                   language={template}
                 />
             </SidebarContent>
@@ -405,7 +446,7 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: Tem
         <main className="flex-grow flex flex-col gap-2 overflow-hidden h-[calc(100vh-4rem)] p-2">
             <div className="flex-grow rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col p-2">
               <div className="flex items-center justify-between p-2 border-b">
-                <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                <div className="text-sm font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md capitalize">
                   {template}
                 </div>
                 <div className="flex items-center gap-2">
@@ -484,3 +525,5 @@ function EditorPageSkeleton() {
     </div>
   )
 }
+
+    
