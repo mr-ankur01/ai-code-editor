@@ -288,14 +288,14 @@ function EditorView({ params: paramsPromise }: { params: Promise<{ template: key
         };
       case 'vue':
         return {
-          template: 'vue3-vite' as const,
+          template: 'vue3' as const,
           files: { 
-            '/src/App.vue': code,
+            '/index.js': code,
+            '/index.html': `<div id="app"></div>`,
            },
            customSetup: {
             dependencies: { 
-              'vue': 'latest',
-              '@vitejs/plugin-vue': 'latest'
+              'vue': 'latest'
             }
           }
         };
